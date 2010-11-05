@@ -8,8 +8,9 @@
 # scripts assume pid of app is same as os.getpid().
 
 import sys, os, ConfigParser, time, signal, socket, re
-import getopt, struct, uuid, tempfile, errno, dfs
-import misc
+import getopt, struct, uuid, tempfile, errno
+sys.path.append("../common")
+import misc, dfs
 
 # Configuration info
 _section_name = "record"

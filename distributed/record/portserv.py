@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import os, sys, socket, select, struct, time, misc, uuid
+import os, sys, socket, select, struct, time, uuid
+sys.path.append("../common")
+import misc
 
 _reg_sock = None
 _query_sock = None

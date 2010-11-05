@@ -7,9 +7,9 @@ WHAT IS BDR?
    for the Linux operating system, and is intended to scale to hundreds
    of nodes.
 
-   BDR should ot being distributed for public use as it is currently
-   a research prototype. See the accompanying LINCENSE file for more
-   details.
+   BDR should not be distributed for public use at this time as it is
+   currently a research prototype. See the accompanying LICENSE file
+   for more details.
 
 HARDWARE REQUIREMENTS:
    BDR was designed for the x86 architecture, and in particular,

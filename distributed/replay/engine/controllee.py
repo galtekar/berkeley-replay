@@ -1,6 +1,7 @@
 # vim:ts=4:sw=4:expandtab
 #
-import os, struct, socket
+import sys, os, struct, socket
+sys.path.append("../../common")
 import misc, msg_stub, events
 
 class ControlleeException(Exception):

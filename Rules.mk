@@ -13,6 +13,7 @@ PERFCTR_DIR = $(DRIVERS_DIR)/perfctr
 MSP_DIR = $(DRIVERS_DIR)/msp
 DIETLIBC_DIR = $(LIBS_DIR)/dietlibc
 VEX_DIR = $(LIBS_DIR)/VEX
+DRE_DIR = distributed/replay/engine
 VKERNEL_BIN = $(BUILD_DIR)/$(RELEASE_NAME)-kernel
 
 

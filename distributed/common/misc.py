@@ -133,7 +133,7 @@ def load_preferences( section_name, default_prefs=None ):
             _config_parser.set(section_name,opt,val)
     script_path = os.path.dirname(sys.argv[0])
     read_one = False
-    for cfg in [abspath("~/.bdrrc"),".bdrrc",script_path+"/bdr.cfg" ]:
+    for cfg in [abspath("~/.bdrrc"),".bdrrc",script_path+"/bdr.cfg","../conf/bdr.cfg" ]:
         read_list = _config_parser.read( [cfg] )
         if len(read_list) > 0:
             read_one = True

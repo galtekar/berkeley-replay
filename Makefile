@@ -9,9 +9,9 @@ base:
 	-$(MAKE) -C $(LIBS_DIR)/VEX
 	-$(MAKE) -C $(DRIVERS_DIR)/perfctr
 	-$(MAKE) -C $(LIBS_DIR)/libcommon
-	-$(MAKE) -C $(LIBS_DIR)libcommon LIBC=glibc
+	-$(MAKE) -C $(LIBS_DIR)/libcommon LIBC=glibc
 	-$(MAKE) -C vkernel
-	-$(MAKE) -C distributed/engine
+	-$(MAKE) -C $(DRE_DIR)
 
 all: base
 	#-$(MAKE) -C tests
@@ -21,7 +21,7 @@ clean:
 	-$(MAKE) -C $(LIBS_DIR)/libcommon LIBC=glibc clean
 	-$(MAKE) -C $(LIBS_DIR)/libcommon clean
 	-$(MAKE) -C vkernel clean
-	-$(MAKE) -C distributed/engine clean
+	-$(MAKE) -C $(DRE_DIR) clean
 
 
 # VEX is rarely updated/patched

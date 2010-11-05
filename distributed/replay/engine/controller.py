@@ -1,6 +1,7 @@
 # vim:ts=4:sw=4:expandtab
 
-import os, heapq, socket, random, select, dbm, atexit, xmlrpclib
+import sys, os, heapq, socket, random, select, dbm, atexit, xmlrpclib
+sys.path.append("../common")
 import controllee, misc, msg_stub, probe, events, struct
 import urlparse_custom, urlparse, dfs, fnmatch, recording
 from misc import *

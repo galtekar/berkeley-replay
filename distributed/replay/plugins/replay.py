@@ -14,6 +14,7 @@
 #
 
 import sys, getopt, os
+sys.path.append("../engine")
 import controller
 
 opt_quiet = False
