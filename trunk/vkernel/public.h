@@ -51,7 +51,7 @@
 #include "libvex_guest_x86.h"
 #include "libvex_trc_values.h"
 #include "libvex_emwarn.h"
-#include "VEX/priv/main_globals.h"
+#include "main_globals.h"
 
 #include "libperfctr.h"
 

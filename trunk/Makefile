@@ -5,13 +5,13 @@ TEST_BIN=tests/regrtest/test.py
 INSTALL=install
 
 base:
-	-$(MAKE) -C dietlibc-0.30 DEBUG=1
-	-$(MAKE) -C VEX
-	-$(MAKE) -C perfctr
+	-$(MAKE) -C $(THIRD_DIR)/dietlibc DEBUG=1
+	-$(MAKE) -C $(THIRD_DIR)/VEX
+	-$(MAKE) -C $(THIRD_DIR)/perfctr
 	-$(MAKE) -C libcommon
 	-$(MAKE) -C libcommon LIBC=glibc
 	-$(MAKE) -C vkernel
-	-$(MAKE) -C console
+	-$(MAKE) -C distributed/api
 
 all: base
 	#-$(MAKE) -C tests
@@ -21,24 +21,24 @@ clean:
 	-$(MAKE) -C libcommon LIBC=glibc clean
 	-$(MAKE) -C libcommon clean
 	-$(MAKE) -C vkernel clean
-	-$(MAKE) -C console clean
+	-$(MAKE) -C distributed/api clean
 
 
 # VEX is rarely updated/patched
 reallyclean: clean
 	-$(MAKE) -C tests clean
-	-$(MAKE) -C VEX clean
-	-$(MAKE) -C perfctr clean
+	-$(MAKE) -C $(THIRD_DIR)/VEX clean
+	-$(MAKE) -C $(THIRD_DIR)/perfctr clean
 
 # Dietlibc takes a while to compile and there is no need to
 # recompile it unless something changes.
 spotless: reallyclean
-	-$(MAKE) -C dietlibc-0.30 clean
+	-$(MAKE) -C $(THIRD_DIR)/dietlibc clean
 
 install: all
 	$(INSTALL) -m444 include/vk.h /usr/include/vk.h
 	$(INSTALL) -m444 include/vk-client-call.h /usr/include/vk-client-call.h
-	$(INSTALL) -m777 $(BUILD_DIR)/dcr /usr/bin/dcr
+	#$(INSTALL) -m777 $(BUILD_DIR)/dcr /usr/bin/dcr
 
 check: base
 	$(TEST_BIN) -f tests/regrtest/py-2.6.4.tests tests/regrtest/acts bin/dcr

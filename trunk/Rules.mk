@@ -29,6 +29,10 @@ CFLAGS += -DMAX_NR_VCPU=2
 endif
 
 BUILD_DIR = $(ROOT_DIR)/build/x86-$(BUILD)
+THIRD_DIR = $(ROOT_DIR)/third-party
+PERFCTR_DIR = $(THIRD_DIR)/perfctr
+DIETLIBC_DIR = $(THIRD_DIR)/dietlibc
+VEX_DIR = $(THIRD_DIR)/VEX
 VKERNEL_BIN = $(BUILD_DIR)/$(RELEASE_NAME)-kernel
 
 LIBGCC = $(shell $(CC) -print-libgcc-file-name)

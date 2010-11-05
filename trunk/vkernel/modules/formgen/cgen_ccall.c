@@ -7,8 +7,8 @@
 #include "vkernel/public.h"
 #include "private.h"
 
-#include "VEX/priv/guest_generic_bb_to_IR.h"
-#include "VEX/priv/guest_x86_defs.h"
+#include "guest_generic_bb_to_IR.h"
+#include "guest_x86_defs.h"
 
 static const int wantsComments = 1;
 

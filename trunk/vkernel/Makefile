@@ -1,16 +1,15 @@
 ROOT_DIR = $(shell readlink -f ../)
 include ../Rules.mk
 
-PERFCTR_DIR = ../perfctr
 OBJDIR = $(BUILD_DIR)/vkernel
 
-INCLUDES += -I../dietlibc-0.30/include -I../ -I../VEX/pub -I$(PERFCTR_DIR)/linux/include -I$(PERFCTR_DIR)/usr.lib
+INCLUDES += -I$(DIETLIBC_DIR)/include -I../ -I$(VEX_DIR)/pub -I$(VEX_DIR)/priv -I$(PERFCTR_DIR)/linux/include -I$(PERFCTR_DIR)/usr.lib
 CFLAGS += -msoft-float -nostdinc $(INCLUDES) -Wno-attributes -DUSING_DIET_LIBC=1 -DCG_SLOW_WRITE=0
 
 LIBS = $(LIBGCC) \
 		$(BUILD_DIR)/libcommon/libcommon.a \
-		../dietlibc-0.30/bin-i386/dietlibc.a \
-		../VEX/libvex.a \
+		$(DIETLIBC_DIR)//bin-i386/dietlibc.a \
+		$(VEX_DIR)/libvex.a \
 		$(PERFCTR_DIR)/usr.lib/libperfctr.a
 
 VKERNEL_LDS = vkernel.lds
