@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2010 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
+
 #pragma once
 
 #define SYM2ADDR(name) ({ extern ulong name; (ulong)&name; })

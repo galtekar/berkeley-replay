@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2010 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
 #pragma once
 
 /* And some more of our own.  These must not have the same values as

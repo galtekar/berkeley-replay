@@ -114,9 +114,6 @@ BT_SOURCES = \
 			modules/formgen/cgen_cfg.c \
 			modules/formgen/cgen_profile.c \
 			#bt/core/pin.c \
-			#bt/taint/main.c \
-			#bt/taint/instr.c \
-			#bt/taint/flow.c \
 			#modules/flow/main.c \
 			#modules/flow/oracle.c \
 			#modules/flow/stats.c \

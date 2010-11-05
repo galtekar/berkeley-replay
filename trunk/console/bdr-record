@@ -224,7 +224,7 @@ def start_record( args ):
 
 
 def usage():
-    print "Usage: %s [options] <prog-and-args> "%(my_name)
+    print "Usage: %s [options] <prog-and-args>"%(my_name)
 
 def read_args():
     global _save_dir, _save_dir_prefix, _vkernel_opts

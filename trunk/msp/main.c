@@ -16,6 +16,7 @@ struct msp_file {
    struct msp_cpu *cpu;
 };
 
+#if 0
 struct guest {
    unsigned long gpgdir;
 };
@@ -121,6 +122,7 @@ deregister_guest(unsigned long gpgdir)
    }
    spin_unlock_irqrestore(&guest_lock, flags);
 }
+#endif
 
 STATIC int
 msp_open(struct inode *inode, struct file *file)
@@ -134,7 +136,7 @@ msp_open(struct inode *inode, struct file *file)
    data->gpgdir = __pa(current->mm->pgd);
    data->cpu = curr_sh;
 
-   DEBUG_MSG("Task [%d:%s:%d] enabling SHPT for gpgdir (0x%lx)\n", 
+   DEBUG_MSG("task [%d:%s:%d] enabling gpgdir (0x%lx)\n", 
          smp_processor_id(), current->comm, current->pid, data->gpgdir);
 
    /* We'll need to restore the guest pgdir on close, so save it. */
@@ -162,25 +164,16 @@ cpu_on_release(void *arg)
 {
    unsigned long gpgdir = (unsigned long) arg;
 
-   /* IRQs should already be disabled here. */
+   ASSERT(in_irq() && irqs_disabled() && !preemptible());
 
-   DEBUG_MSG("Cleanup for gpgdir 0x%lx, current pgdir 0x%lx\n", gpgdir,
+   DEBUG_MSG("cleanup for gpgdir 0x%lx, current pgdir 0x%lx\n", gpgdir,
          native_read_cr3());
-   /* If the CPU isn't shadowing, then we have nothing to do. */
+   /* If the CPU isn't shadowing gpgdir, then we have nothing to do. */
    if (curr_sh->guest_cr3 == gpgdir) {
       /* Switch back to the guest pgdir. */
       msp_switch_to(gpgdir);
       ASSERT(native_read_cr3() == gpgdir);
    }
-#if 0
-   /* This check is too strong. We don't care if it doesn't hold. */
-   DEBUG_MSG("current->mm=0x%lx\n", current->mm);
-   if (current->mm) {
-      DEBUG_MSG("pgd=0x%lx cr3=0x%x\n", __pa(current->mm->pgd),
-            native_read_cr3());
-      ASSERT(__pa(current->mm->pgd) == native_read_cr3());
-   }
-#endif
    /* Now we are no longer shadowing the guest, so free up the slot. */
    guest_free_pagetable(curr_sh, gpgdir);
 }
@@ -198,16 +191,24 @@ msp_release(struct inode *inode, struct file *file)
     * the VFS release call. */
    msp_fasync(-1, file, 0);
 
-   preempt_disable();
+   DEBUG_MSG("disabling for task [%s:%d], gpgdir (0x%lx)\n", 
+         current->comm, current->pid, data->gpgdir);
+#if 0
    /* Deregister the current pgdir. */
    deregister_guest(data->gpgdir);
+#else
+   /* Deactivate (but do not deallocate) spts. */
+   shadow_lock_irq();
+   remove_gpgdir_from_cpus(data->gpgdir);
+   shadow_unlock_irq();
+#endif
 
-   DEBUG_MSG("Disabling SHPT for task [%s:%d], gpgdir (0x%lx)\n", 
-         current->comm, current->pid, data->gpgdir);
-
-   /* Make all CPUs switch to the shadow pagetable. */
+   /* Make all CPUs switch to the real pagetable, hence ensuring that no
+    * one is using the spts. */
    on_each_cpu(cpu_on_release, (void*)data->gpgdir,  1 /* wait */);
-   preempt_enable();
+
+   /* Now it's safe to deallocate the spts. */
+   deallocate_inactive_list();
 
    kfree(data);
    file->private_data = NULL;
@@ -228,6 +229,16 @@ cpu_on_start(void *arg)
    }
 }
 
+STATIC long
+register_guest(unsigned long gpgdir)
+{
+   shadow_lock_irq();
+   for_each_cpu() {
+      spt_add_entry(cpu, gpgdir);
+   }
+   shadow_unlock_irq();
+}
+
 
 STATIC long
 msp_ioctl_start(const struct file *filp)
@@ -235,16 +246,12 @@ msp_ioctl_start(const struct file *filp)
    int err = 0;
    struct msp_file *data = (struct msp_file*) filp->private_data;
 
-   preempt_disable();
-
-   /* Add gpgdir to list of shadowed pgdirs. */
+   /* Add gpgdir on all CPUs. */
    register_guest(data->gpgdir);
 
    /* Make all CPUs switch to the shadow pagetable, if they are currently
     * running a task that uses gpgdir. */
    on_each_cpu(cpu_on_start, (void*)data->gpgdir,  1 /* wait */);
-
-   preempt_enable();
 
    return err;
 }

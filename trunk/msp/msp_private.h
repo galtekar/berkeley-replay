@@ -1,6 +1,5 @@
-
-#ifndef _LGUEST_H
-#define _LGUEST_H
+#ifndef _MSP_H
+#define _MSP_H
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
@@ -14,9 +13,8 @@
 #include <linux/msp.h>
 
 
-/* Helper macros to obtain the first 12 or the last 20 bits, this is only the
- * first step in the migration to the kernel types.  pte_pfn is already defined
- * in the kernel. */
+/* Helper macros to deal with page tables and addresses. pte_pfn is already 
+ * defined in the kernel. */
 #define pgd_flags(x)	(pgd_val(x) & ~PAGE_MASK)
 #define pgd_pfn(x)	(pgd_val(x) >> PAGE_SHIFT)
 #define pmd_pfn(x)  ((pmd_val((x)) & __PHYSICAL_MASK) >> PAGE_SHIFT)
@@ -43,9 +41,10 @@
 
 struct pgdir
 {
-   bool is_kernel_mapped;
 	unsigned long gpgdir;
    pgd_t *pgdir;
+
+   bool is_kernel_mapped;
 };
 
 #define NR_SHADOW_PGD 4
@@ -129,7 +128,7 @@ struct shadow
     * upgrade/downgrade events. */
    uint64_t clock;
 
-   /* The so called shadow lock. This protects may things:
+   /* The so called shadow lock. This protects many things:
     *    - all shadow pagetables (i.e., spts)
     *    - CREW event counts
     *    - inverted page table (ipt)
@@ -220,4 +219,4 @@ do { \
 #define STATIC_INLINE static inline
 
 #endif	/* __ASSEMBLY__ */
-#endif	/* _LGUEST_H */
+#endif	/* _MSP_H */

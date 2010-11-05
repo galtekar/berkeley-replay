@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2004-2010 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
 #include "vkernel/public.h"
 
 #include <stdio.h>
@@ -725,6 +731,12 @@ ServerHandleIoMsgReqs(const int fd, const VkReqTag tag, void *arg)
          ASSERT(res == len);
          break;
       }
+#if 0
+   case VK_REQ_GET_MSG_DATA:
+      UNUSED const ssize_t res = NetOps_SendAll(ctrl_fd, buf, len, 0);
+      ASSERT(res == len);
+      break;
+#endif
    default:
       was_handled = 0;
       break;

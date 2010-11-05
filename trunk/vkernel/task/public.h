@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2004-2010 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
 #pragma once
 
 /* Our segmentation register (TSS stands for Task State Segment). This is

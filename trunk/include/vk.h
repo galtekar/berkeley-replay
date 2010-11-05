@@ -49,6 +49,7 @@ typedef enum {
    VK_REQ_SET_FILE_PLANE,
    VK_REQ_GET_MSG_INFO,
    VK_REQ_GET_FILE_INFO,
+   VK_REQ_GET_MSG_DATA,
 
    VK_REQ_LAST_DUMMY, /* For debugging checks. */
 } VkReqTag;

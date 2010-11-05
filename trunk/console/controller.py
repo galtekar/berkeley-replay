@@ -6,6 +6,8 @@ import urlparse_custom, urlparse, dfs, fnmatch, recording
 from misc import *
 import solver
 
+env = os.environ
+
 class Task:
     def __init__( self, index, ctrl, pid, tid ):
         self.index = index
@@ -167,8 +169,8 @@ class Controller:
     def _read_config(self):
         SECTION_NAME = "replay"
         DEFAULT_PREFS = { 
-                "cache_base_dir" : "/tmp/bdr-galtekar/replay-cache/",
-                "vkernel_bin" : "/usr/bin/bdr-hv",
+                "cache_base_dir" : "/tmp/bdr-"+env["USER"]+"/replay-cache/",
+                "vkernel_bin" : "/usr/bin/bdr-kernel",
                 "hadoop_bin" : "/usr/bin/hadoop",
         }
         pref = misc.load_preferences(SECTION_NAME, DEFAULT_PREFS)
@@ -192,7 +194,7 @@ class Controller:
                     node.ping()
                 except:
                     if i == 0:
-                        child = misc.start_child( [ssh_bin, hostname, "/home/galtekar/src/logreplay/trunk/console/bdr-worker" ], out_file=file('worker.out', 'a') )
+                        child = misc.start_child( [ssh_bin, hostname, "bdr-worker" ], out_file=file('worker.out', 'a') )
                         time.sleep(1)
                 else:
                     break

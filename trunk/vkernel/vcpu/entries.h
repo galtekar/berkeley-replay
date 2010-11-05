@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2004-2010 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
 /* NOTE: We may include this multiple times in a file, potentially after
  * redefining LOGENTRYDEF. For example, we do this to associate integer ids
  * with each log entry type. */

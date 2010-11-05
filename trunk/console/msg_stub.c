@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2010 Regents of the University of California
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
+
 #include <python2.6/Python.h>
 
 #include <include/vk.h>

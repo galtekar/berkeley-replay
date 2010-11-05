@@ -90,52 +90,27 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 perfctr-2.6.38/update-kernel
-badd +419 vkernel/task/gate.S
-badd +266 vkernel/task/preempt.c
-badd +327 vkernel/task/brcnt.c
-badd +1 vkernel/OUTLINE
-badd +1 vkernel/PERF
-badd +67 vkernel/RACES
-badd +1 vkernel/RESULTS
-badd +1 vkernel/BUGS
-badd +1 vkernel/NOTES
-badd +1 task/crew.c
-badd +1 vkernel/task/config.c
-badd +595 vkernel/task/pid.c
-badd +619 vkernel/task/fork.c
-badd +1 vkernel/task/insnemu.c
-badd +905 vkernel/task/system.c
-badd +239 vkernel/task/rsyscall.S
-badd +185 vkernel/task/process.c
-badd +35 crew.c
-badd +43 vkernel/task/mem_share.c
-badd +425 vkernel/task/gate_helper.c
-badd +1 vkernel/modules/formgen/main.c
-badd +28 shpt/shpt.h
-badd +259 vkernel/dev/rd-os/fops.c
-badd +245 vkernel/task/private.h
-badd +671 vkernel/task/public.h
-badd +1 vkernel/task/signal.c
-badd +142 vkernel/Makefile
-badd +50 vkernel/task/msp.c
-badd +235 vkernel/vcpu/vcpu.c
-badd +563 vkernel/task/exit.c
-badd +359 vkernel/vcpu/public.h
-badd +59 libcommon/syscall.h
-badd +21 console/bdr.cfg
-badd +92 console/bdr-record
-badd +146 console/misc.py
-badd +246 vkernel/vcpu/log.c
-badd +63 vkernel/vkernel.lds.S
-badd +1 vkernel/vkernel.lds.h
-badd +36 vkernel/vcpu/log.h
-badd +0 libcommon/tsocket.c
-badd +28 vkernel/modules/base/history.c
-args /scratch/galtekar/src/logreplay/trunk
-set lines=65 columns=163
-winpos 224 2
-edit vkernel/modules/base/history.c
+badd +33 console/plugins/replay.py
+badd +13 console/plugins/bdr_console.py
+badd +1 console/bdr-record
+badd +186 console/controller.py
+badd +1 /scratch/galtekar/src/logreplay/trunk/vkernel/modules/session/record.c
+badd +1 console/plugins/worker.out
+badd +40 console/plugins/classify-plane.py
+badd +1 console/plugins/dtaint.py
+badd +216 console/probe.py
+badd +118 console/events.py
+badd +1 console/plugins/dump-reads.py
+badd +1 console/plugins/send-recv.py
+badd +6 console/plugins/console.py
+badd +259 /scratch/galtekar/src/logreplay/trunk/vkernel/dev/rd-os/fops.c
+badd +879 vkernel/dev/rd-os/fops.c
+badd +0 vkernel/modules/base/server.c
+badd +0 console/msg_stub.c
+args ~/src/logreplay/trunk
+set lines=65 columns=161
+winpos 219 1
+edit vkernel/modules/base/server.c
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -145,9 +120,114 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 81 + 81) / 163)
-exe 'vert 2resize ' . ((&columns * 81 + 81) / 163)
+exe 'vert 1resize ' . ((&columns * 80 + 80) / 161)
+exe 'vert 2resize ' . ((&columns * 80 + 80) / 161)
 argglobal
+setlocal keymap=
+setlocal noarabic
+setlocal autoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal cindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=:0,l1,t0,g0
+setlocal cinwords=if,else,while,do,for,switch
+setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal nocursorcolumn
+set cursorline
+setlocal cursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'c'
+setlocal filetype=c
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=ncroql
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=0
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=ccomplete#Complete
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=3
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'c'
+setlocal syntax=c
+endif
+setlocal tabstop=3
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=8
+silent! normal! zE
+let s:l = 985 - ((31 * winheight(0) + 31) / 63)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+985
+normal! 0
+lcd ~/src/logreplay/trunk
+wincmd w
+argglobal
+edit ~/src/logreplay/trunk/console/msg_stub.c
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -243,121 +323,16 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=8
 silent! normal! zE
-let s:l = 28 - ((27 * winheight(0) + 31) / 63)
+let s:l = 164 - ((62 * winheight(0) + 31) / 63)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-28
+164
 normal! 0
-lcd /scratch/galtekar/src/logreplay/trunk
+lcd ~/src/logreplay/trunk
 wincmd w
-argglobal
-edit /scratch/galtekar/src/logreplay/trunk/libcommon/tsocket.c
-setlocal keymap=
-setlocal noarabic
-setlocal autoindent
-setlocal balloonexpr=
-setlocal nobinary
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal cindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=:0,l1,t0,g0
-setlocal cinwords=if,else,while,do,for,switch
-setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
-setlocal commentstring=/*%s*/
-setlocal complete=.,w,b,u,t,i
-setlocal completefunc=
-setlocal nocopyindent
-setlocal nocursorcolumn
-set cursorline
-setlocal cursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=
-setlocal expandtab
-if &filetype != 'c'
-setlocal filetype=c
-endif
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=ncroql
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal nolist
-setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=octal,hex
-setlocal nonumber
-setlocal numberwidth=4
-setlocal omnifunc=ccomplete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=3
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=0
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'c'
-setlocal syntax=c
-endif
-setlocal tabstop=3
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=8
-silent! normal! zE
-let s:l = 2361 - ((35 * winheight(0) + 31) / 63)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-2361
-normal! 026l
-lcd /scratch/galtekar/src/logreplay/trunk
-wincmd w
-exe 'vert 1resize ' . ((&columns * 81 + 81) / 163)
-exe 'vert 2resize ' . ((&columns * 81 + 81) / 163)
+exe 'vert 1resize ' . ((&columns * 80 + 80) / 161)
+exe 'vert 2resize ' . ((&columns * 80 + 80) / 161)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

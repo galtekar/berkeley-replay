@@ -135,16 +135,61 @@ check_gpgd(struct msp_cpu *cpu, pgd_t gpgd)
 /* We keep several page tables.  This is a simple routine to find the page
  * table (if any) corresponding to this top-level address the Guest has given
  * us. */
+#if 0
 STATIC unsigned int 
 find_pgdir(struct msp_cpu *cpu, unsigned long gpgdir)
 {
    unsigned int i;
+
+   ASSERT(shadow_is_locked());
+
    for (i = 0; i < ARRAY_SIZE(cpu->pgdirs); i++) {
       if (cpu->pgdirs[i].pgdir && cpu->pgdirs[i].gpgdir == gpgdir) {
          break;
       }
    }
 	return i;
+}
+#else
+STATIC struct pgdir *
+spt_lookup(struct msp_cpu *cpu, unsigned long gpgdir)
+{
+   struct pgdir *pg;
+   struct hlist_node *node;
+   struct hlist_head *gpgdir_chain =
+      &cpu->spt_map[hash_long(gpgdir, NR_BUCKET_BITS)];
+
+   ASSERT(shadow_is_locked());
+   hlist_for_each_entry(pg, node, gpgdir_chain, by_gpgdir) {
+      if (pg->gpgdir == gpgdir) {
+         return pg;
+      }
+   }
+   return NULL;
+}
+#endif
+
+void
+spt_add_entry(struct msp_cpu *cpu, unsigned long gpgdir)
+{
+   struct pgdir *pg;
+   struct hlist_head *spt_head;
+
+   ASSERT(shadow_is_locked());
+   ASSERT(pg);
+   ASSERT(pg->gpgdir);
+
+   pg = kmalloc(sizeof(*pg), GFP_ATOMIC);
+   pg->gpgdir = gpgdir;
+   pg->pgdir = alloc_zero_page();
+   pg->is_kernel_mapped = 0;
+
+   spt_head = &cpu->spt_map[hash_long(pg->gpgdir, NR_BUCKET_BITS)];
+   hlist_add_head(&pg->by_gpgdir, spt_head);
+}
+
+spt_del_entry(struct msp_cpu *cpu, struct pgdir *pg)
+{
 }
 
 struct downgrade_args {
@@ -243,12 +288,13 @@ STATIC int
 do_downgrade_work(struct msp_cpu *rem_cpu, unsigned long gpgdir, 
       unsigned long vaddr, int errcode, pte_t gpte)
 {
-   int was_downgraded = 0, idx;
+   int was_downgraded = 0;
+   struct pgdir *pg;
 
-   idx = find_pgdir(rem_cpu, gpgdir);
-   if (idx != ARRAY_SIZE(rem_cpu->pgdirs)) {
+   pg = spt_lookup(rem_cpu, gpgdir);
+   if (pg) {
       /* Look up the matching shadow page directory entry. */
-      pgd_t *spgd = spgd_addr(rem_cpu, idx, vaddr);
+      pgd_t *spgd = spgd_addr(pg, vaddr);
       /* If the top level isn't present, there's no entry to update. */
       if (pgd_flags(*spgd) & _PAGE_PRESENT) {
          /* It's present. Per CREW rules, it must be write protected if
@@ -672,72 +718,6 @@ pin_kernel_pages(struct msp_cpu *cpu)
    sdir->is_kernel_mapped = true;
 }
 
-/*H:435 And this is us, creating the new page directory.  If we really do
- * allocate a new one (and so the kernel parts are not there), we set
- * blank_pgdir. */
-STATIC unsigned int 
-new_pgdir(struct msp_cpu *cpu, unsigned long gpgdir)
-{
-	unsigned int next;
-   /* Find an unused pgdir, don't replace in-use ones as we originally
-    * did. This makes the code more predicatable, and easier to debug. */
-   next = find_pgdir(cpu, 0);
-   if (next < ARRAY_SIZE(cpu->pgdirs)) {
-      cpu->pgdirs[next].gpgdir = gpgdir;
-      ASSERT(!cpu->pgdirs[next].is_kernel_mapped);
-   } else {
-      BUG_ON(1);
-   }
-#if 0
-   /* No need to flush, since pgtable should be blank. */
-   /* Release all the non-kernel mappings. */
-   flush_user_mappings(cpu, next);
-#endif
-	return next;
-}
-
-/*H:430 (iv) Switching page tables
- *
- * Now we've seen all the page table setting and manipulation, let's see what
- * what happens when the Guest changes page tables (ie. changes the top-level
- * pgdir).  This occurs on almost every context switch. */
-int
-guest_new_pagetable(struct msp_cpu *cpu, unsigned long gpgdir)
-{
-	int idx;
-   unsigned long flags;
-   
-   ASSERT(gpgdir);
-
-   spin_lock_irqsave(&msp_state.lock, flags);
-
-	/* See if we have this one already. */
-	idx = find_pgdir(cpu, gpgdir);
-	/* If not, we allocate or mug an existing one. */
-	if (idx == ARRAY_SIZE(cpu->pgdirs)) {
-		idx = new_pgdir(cpu, gpgdir);
-   }
-   BUG_ON(!cpu->pgdirs[cpu->cpu_pgd].pgdir);
-	/* If it was completely blank, we must map in the Guest kernel pages,
-    * for two reasons:
-    *
-    * 1. To avoid double-faults. The guest may fault, but if the kernel
-    * stack and handler code pages are not mapped, then it will fault
-    * again.
-    *
-    * 2. So we don't shadow fault on those--recall we are only interested in
-    * shadowing user pages.
-    */
-	if (!cpu->pgdirs[idx].is_kernel_mapped) {
-		pin_kernel_pages(cpu);
-   }
-   ASSERT(cpu->pgdirs[idx].is_kernel_mapped);
-
-   spin_unlock_irqrestore(&msp_state.lock, flags);
-
-   return idx;
-}
-
 STATIC void
 release_pagetable(struct pgdir *pg)
 {
@@ -949,6 +929,56 @@ msp_load_msp_cr3(void)
    msp_global_write_cr3(__pa(vpgdir));
 }
 
+/*H:435 And this is us, creating the new page directory.  If we really do
+ * allocate a new one (and so the kernel parts are not there), we set
+ * blank_pgdir. */
+STATIC unsigned int 
+new_pgdir(struct msp_cpu *cpu, unsigned long gpgdir)
+{
+	unsigned int next;
+   /* Find an unused pgdir, don't replace in-use ones as we originally
+    * did. This makes the code more predicatable, and easier to debug. */
+   next = find_pgdir(cpu, 0);
+   if (next < ARRAY_SIZE(cpu->pgdirs)) {
+      cpu->pgdirs[next].gpgdir = gpgdir;
+      ASSERT(!cpu->pgdirs[next].is_kernel_mapped);
+   } else {
+      BUG_ON(1);
+   }
+#if 0
+   /* No need to flush, since pgtable should be blank. */
+   /* Release all the non-kernel mappings. */
+   flush_user_mappings(cpu, next);
+#endif
+	return next;
+}
+
+/*H:430 (iv) Switching page tables
+ *
+ * Now we've seen all the page table setting and manipulation, let's see what
+ * what happens when the Guest changes page tables (ie. changes the top-level
+ * pgdir).  This occurs on almost every context switch. */
+STATIC int
+init_pagetable_if_needed(struct msp_cpu *cpu, struct pgdir *pg)
+{
+   ASSERT(shadow_is_locked());
+	/* If it was completely blank, we must map in the Guest kernel pages,
+    * for two reasons:
+    *
+    * 1. To avoid double-faults. The guest may fault, but if the kernel
+    * stack and handler code pages are not mapped, then it will fault
+    * again.
+    *
+    * 2. So we don't shadow fault on those--recall we are only interested in
+    * shadowing user pages.
+    */
+	if (!pg->is_kernel_mapped) {
+		pin_kernel_pages(pg);
+   }
+   ASSERT(pg->is_kernel_mapped);
+}
+
+
 void
 msp_switch_to(unsigned long gpgdir)
 {
@@ -956,12 +986,12 @@ msp_switch_to(unsigned long gpgdir)
    ASSERT(!cpu_has_pse);
    ASSERT(gpgdir);
 
-   if (MSP_find_guest(gpgdir) != -1) {
-      int idx;
-      curr_sh->guest_cr3 = gpgdir;
-      idx = guest_new_pagetable(curr_sh, gpgdir);
+   shadow_lock_irqsave(flags);
+
+   if ((pg = spt_lookup(gpgdir))) {
+      init_pagetable_if_needed(curr_sh, pg);
       /* Change the current pgd index to the new one. */
-      curr_sh->cpu_pgd = idx;
+      curr_sh->current_pg = pg;
       msp_load_msp_cr3();
       //DEBUG_MSG("%d: switched to gpgdir=0x%lx\n", smp_processor_id(), gpgdir);
    } else {
@@ -973,6 +1003,10 @@ msp_switch_to(unsigned long gpgdir)
          native_write_cr3(gpgdir);
       }
       /* Indicate that we aren't shadowing the gpgdir. */
-      curr_sh->guest_cr3 = 0;
+      curr_sh->current_pg = 0;
    }
+
+   shadow_unlock_irqrestore(flags);
+
 }
+

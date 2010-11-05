@@ -1,4 +1,4 @@
-cmd_drivers/perfctr/x86.o := gcc -Wp,-MD,drivers/perfctr/.x86.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.1.3/include -Iinclude  -I/scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include -include include/linux/autoconf.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Os -m32 -msoft-float -mregparm=3 -freg-struct-return -mpreferred-stack-boundary=2 -march=i686 -mtune=generic -Wa,-mtune=generic32 -ffreestanding -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -Iarch/x86/include/asm/mach-default -fno-stack-protector -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -Wdeclaration-after-statement -Wno-pointer-sign -fwrapv -fno-unit-at-a-time -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(x86)"  -D"KBUILD_MODNAME=KBUILD_STR(perfctr)"  -c -o drivers/perfctr/.tmp_x86.o drivers/perfctr/x86.c
+cmd_drivers/perfctr/x86.o := gcc -Wp,-MD,drivers/perfctr/.x86.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.1.3/include -Iinclude  -I/home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include -include include/linux/autoconf.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Os -m32 -msoft-float -mregparm=3 -freg-struct-return -mpreferred-stack-boundary=2 -march=i686 -mtune=generic -Wa,-mtune=generic32 -ffreestanding -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -Iarch/x86/include/asm/mach-default -fno-stack-protector -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -Wdeclaration-after-statement -Wno-pointer-sign -fwrapv -fno-unit-at-a-time -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(x86)"  -D"KBUILD_MODNAME=KBUILD_STR(perfctr)"  -c -o drivers/perfctr/.tmp_x86.o drivers/perfctr/x86.c
 
 deps_drivers/perfctr/x86.o := \
   drivers/perfctr/x86.c \
@@ -39,40 +39,40 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/phys/addr/t/64bit.h) \
     $(wildcard include/config/64bit.h) \
   include/linux/posix_types.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/posix_types.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/posix_types.h \
     $(wildcard include/config/x86/32.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/posix_types_32.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/types.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/posix_types_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/types.h \
     $(wildcard include/config/x86/64.h) \
     $(wildcard include/config/highmem64g.h) \
   include/asm-generic/int-ll64.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/processor.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/processor.h \
     $(wildcard include/config/x86/vsmp.h) \
     $(wildcard include/config/x86/ds.h) \
     $(wildcard include/config/x86/ptrace/bts.h) \
     $(wildcard include/config/paravirt.h) \
     $(wildcard include/config/x86/debugctlmsr.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/processor-flags.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/processor-flags.h \
     $(wildcard include/config/vm86.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/vm86.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ptrace.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ptrace-abi.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/segment.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/vm86.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ptrace.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ptrace-abi.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/segment.h \
   include/linux/init.h \
     $(wildcard include/config/hotplug.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/math_emu.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/sigcontext.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/current.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/percpu.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/math_emu.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/sigcontext.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/current.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/percpu.h \
   include/asm-generic/percpu.h \
     $(wildcard include/config/debug/preempt.h) \
     $(wildcard include/config/have/setup/per/cpu/area.h) \
   include/linux/threads.h \
     $(wildcard include/config/nr/cpus.h) \
     $(wildcard include/config/base/small.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cpufeature.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cpufeature.h \
     $(wildcard include/config/x86/invlpg.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/required-features.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/required-features.h \
     $(wildcard include/config/x86/minimum/cpu/family.h) \
     $(wildcard include/config/math/emulation.h) \
     $(wildcard include/config/x86/pae.h) \
@@ -84,29 +84,29 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/generic/find/first/bit.h) \
     $(wildcard include/config/generic/find/last/bit.h) \
     $(wildcard include/config/generic/find/next/bit.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/bitops.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/alternative.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/asm.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/bitops.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/alternative.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/asm.h \
   include/asm-generic/bitops/sched.h \
   include/asm-generic/bitops/hweight.h \
   include/asm-generic/bitops/fls64.h \
   include/asm-generic/bitops/ext2-non-atomic.h \
   include/asm-generic/bitops/le.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/byteorder.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/byteorder.h \
   include/linux/byteorder/little_endian.h \
   include/linux/swab.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/swab.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/swab.h \
     $(wildcard include/config/x86/bswap.h) \
   include/linux/byteorder/generic.h \
   include/asm-generic/bitops/minix.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/system.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/system.h \
     $(wildcard include/config/ia32/emulation.h) \
     $(wildcard include/config/x86/ppro/fence.h) \
     $(wildcard include/config/x86/oostore.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cmpxchg.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cmpxchg_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cmpxchg.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cmpxchg_32.h \
     $(wildcard include/config/x86/cmpxchg.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/nops.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/nops.h \
     $(wildcard include/config/mk7.h) \
   include/linux/kernel.h \
     $(wildcard include/config/preempt/voluntary.h) \
@@ -118,7 +118,7 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/ftrace/mcount/record.h) \
   /usr/lib/gcc/i486-linux-gnu/4.1.3/include/stdarg.h \
   include/linux/linkage.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/linkage.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/linkage.h \
     $(wildcard include/config/x86/alignment/16.h) \
   include/linux/log2.h \
     $(wildcard include/config/arch/has/ilog2/u32.h) \
@@ -126,29 +126,29 @@ deps_drivers/perfctr/x86.o := \
   include/linux/typecheck.h \
   include/linux/ratelimit.h \
   include/linux/param.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/param.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/param.h \
     $(wildcard include/config/hz.h) \
   include/linux/dynamic_printk.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/bug.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/bug.h \
     $(wildcard include/config/bug.h) \
     $(wildcard include/config/debug/bugverbose.h) \
   include/asm-generic/bug.h \
     $(wildcard include/config/generic/bug/relative/pointers.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/div64.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/div64.h \
   include/linux/irqflags.h \
     $(wildcard include/config/trace/irqflags.h) \
     $(wildcard include/config/irqsoff/tracer.h) \
     $(wildcard include/config/preempt/tracer.h) \
     $(wildcard include/config/trace/irqflags/support.h) \
     $(wildcard include/config/x86.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/irqflags.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/irqflags.h \
     $(wildcard include/config/debug/lock/alloc.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/paravirt.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/paravirt.h \
     $(wildcard include/config/highpte.h) \
     $(wildcard include/config/paravirt/debug.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/page.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/page.h \
   include/linux/const.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/page_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/page_32.h \
     $(wildcard include/config/highmem4g.h) \
     $(wildcard include/config/page/offset.h) \
     $(wildcard include/config/4kstacks.h) \
@@ -157,8 +157,8 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/flatmem.h) \
     $(wildcard include/config/x86/3dnow.h) \
   include/linux/string.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/string.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/string_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/string.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/string_32.h \
   include/asm-generic/pgtable-nopmd.h \
   include/asm-generic/pgtable-nopud.h \
   include/asm-generic/memory_model.h \
@@ -172,23 +172,23 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/cpumask/offstack.h) \
     $(wildcard include/config/debug/per/cpu/maps.h) \
   include/linux/bitmap.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/kmap_types.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/kmap_types.h \
     $(wildcard include/config/debug/highmem.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/desc_defs.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/msr.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/msr-index.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/errno.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/desc_defs.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/msr.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/msr-index.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/errno.h \
   include/asm-generic/errno.h \
   include/asm-generic/errno-base.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ds.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ds.h \
   include/linux/err.h \
   include/linux/personality.h \
   include/linux/cache.h \
     $(wildcard include/config/arch/has/cache/line/size.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cache.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cache.h \
     $(wildcard include/config/x86/l1/cache/shift.h) \
   include/linux/stat.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/stat.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/stat.h \
   include/linux/time.h \
   include/linux/seqlock.h \
   include/linux/spinlock.h \
@@ -199,20 +199,20 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/preempt/notifiers.h) \
   include/linux/thread_info.h \
     $(wildcard include/config/compat.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/thread_info.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/thread_info.h \
     $(wildcard include/config/debug/stack/usage.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ftrace.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ftrace.h \
     $(wildcard include/config/function/tracer.h) \
     $(wildcard include/config/dynamic/ftrace.h) \
     $(wildcard include/config/function/graph/tracer.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/atomic.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/atomic_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/atomic.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/atomic_32.h \
     $(wildcard include/config/m386.h) \
   include/asm-generic/atomic.h \
   include/linux/stringify.h \
   include/linux/bottom_half.h \
   include/linux/spinlock_types.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/spinlock_types.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/spinlock_types.h \
   include/linux/lockdep.h \
     $(wildcard include/config/lockdep.h) \
     $(wildcard include/config/lock/stat.h) \
@@ -222,8 +222,8 @@ deps_drivers/perfctr/x86.o := \
   include/linux/stacktrace.h \
     $(wildcard include/config/stacktrace.h) \
     $(wildcard include/config/user/stacktrace/support.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/spinlock.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/rwlock.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/spinlock.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/rwlock.h \
   include/linux/spinlock_api_smp.h \
   include/linux/math64.h \
   include/linux/kmod.h \
@@ -262,67 +262,67 @@ deps_drivers/perfctr/x86.o := \
   include/linux/mutex-debug.h \
   include/linux/rwsem.h \
     $(wildcard include/config/rwsem/generic/spinlock.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/rwsem.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/rwsem.h \
   include/linux/srcu.h \
   include/linux/topology.h \
     $(wildcard include/config/sched/smt.h) \
     $(wildcard include/config/sched/mc.h) \
   include/linux/smp.h \
     $(wildcard include/config/use/generic/smp/helpers.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/smp.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/smp.h \
     $(wildcard include/config/x86/io/apic.h) \
     $(wildcard include/config/x86/32/smp.h) \
     $(wildcard include/config/x86/64/smp.h) \
     $(wildcard include/config/x86/has/boot/cpu/id.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/mpspec.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/mpspec.h \
     $(wildcard include/config/x86/numaq.h) \
     $(wildcard include/config/mca.h) \
     $(wildcard include/config/eisa.h) \
     $(wildcard include/config/x86/mpparse.h) \
     $(wildcard include/config/acpi.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/mpspec_def.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/mpspec_def.h \
   arch/x86/include/asm/mach-default/mach_mpspec.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/apic.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/apic.h \
   include/linux/pm.h \
     $(wildcard include/config/pm/sleep.h) \
   include/linux/delay.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/delay.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/fixmap.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/fixmap_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/delay.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/fixmap.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/fixmap_32.h \
     $(wildcard include/config/x86/visws/apic.h) \
     $(wildcard include/config/x86/f00f/bug.h) \
     $(wildcard include/config/x86/cyclone/timer.h) \
     $(wildcard include/config/pci/mmconfig.h) \
     $(wildcard include/config/provide/ohci1394/dma/init.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/acpi.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/acpi.h \
     $(wildcard include/config/acpi/numa.h) \
   include/acpi/pdc_intel.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/numa.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/numa_32.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/mmu.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/apicdef.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/io_apic.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/numa.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/numa_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/mmu.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/apicdef.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/io_apic.h \
     $(wildcard include/config/pci.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/irq_vectors.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/irq_vectors.h \
     $(wildcard include/config/x86/voyager.h) \
     $(wildcard include/config/sparse/irq.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/pda.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/pda.h \
     $(wildcard include/config/cc/stackprotector.h) \
   arch/x86/include/asm/mach-default/mach_apicdef.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/topology.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/topology.h \
     $(wildcard include/config/x86/ht.h) \
     $(wildcard include/config/x86/64/acpi/numa.h) \
   include/asm-generic/topology.h \
   include/linux/elf.h \
   include/linux/elf-em.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/elf.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/elf.h \
     $(wildcard include/config/compat/vdso.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/user.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/user_32.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/auxvec.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/vdso.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/desc.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ldt.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/user.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/user_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/auxvec.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/vdso.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/desc.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ldt.h \
   include/linux/kobject.h \
   include/linux/sysfs.h \
   include/linux/kref.h \
@@ -348,8 +348,8 @@ deps_drivers/perfctr/x86.o := \
   include/linux/completion.h \
   include/linux/rcuclassic.h \
     $(wildcard include/config/rcu/cpu/stall/detector.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/local.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/module.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/local.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/module.h \
     $(wildcard include/config/m486.h) \
     $(wildcard include/config/m586.h) \
     $(wildcard include/config/m586tsc.h) \
@@ -407,8 +407,8 @@ deps_drivers/perfctr/x86.o := \
   include/linux/capability.h \
     $(wildcard include/config/security/file/capabilities.h) \
   include/linux/timex.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/timex.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/tsc.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/timex.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/tsc.h \
   include/linux/jiffies.h \
   include/linux/rbtree.h \
   include/linux/mm_types.h \
@@ -418,16 +418,16 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/mmu/notifier.h) \
   include/linux/auxvec.h \
   include/linux/prio_tree.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cputime.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/cputime.h \
   include/asm-generic/cputime.h \
   include/linux/sem.h \
   include/linux/ipc.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ipcbuf.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/sembuf.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ipcbuf.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/sembuf.h \
   include/linux/signal.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/signal.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/signal.h \
   include/asm-generic/signal.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/siginfo.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/siginfo.h \
   include/asm-generic/siginfo.h \
   include/linux/fs_struct.h \
   include/linux/path.h \
@@ -436,17 +436,17 @@ deps_drivers/perfctr/x86.o := \
   include/linux/percpu_counter.h \
   include/linux/seccomp.h \
     $(wildcard include/config/seccomp.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/seccomp.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/seccomp_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/seccomp.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/seccomp_32.h \
   include/linux/unistd.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/unistd.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/unistd_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/unistd.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/unistd_32.h \
   include/linux/rtmutex.h \
     $(wildcard include/config/debug/rt/mutexes.h) \
   include/linux/plist.h \
     $(wildcard include/config/debug/pi/list.h) \
   include/linux/resource.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/resource.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/resource.h \
   include/asm-generic/resource.h \
   include/linux/timer.h \
     $(wildcard include/config/timer/stats.h) \
@@ -481,7 +481,7 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/migration.h) \
   include/linux/limits.h \
   include/linux/ioctl.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ioctl.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/ioctl.h \
   include/asm-generic/ioctl.h \
   include/linux/kdev_t.h \
   include/linux/dcache.h \
@@ -498,7 +498,7 @@ deps_drivers/perfctr/x86.o := \
   include/linux/nfs.h \
   include/linux/sunrpc/msg_prot.h \
   include/linux/fcntl.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/fcntl.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/fcntl.h \
   include/asm-generic/fcntl.h \
   include/linux/perfctr.h \
     $(wildcard include/config/kperfctr.h) \
@@ -507,16 +507,16 @@ deps_drivers/perfctr/x86.o := \
     $(wildcard include/config/perfctr/interrupt/support.h) \
     $(wildcard include/config/perfctr.h) \
   include/asm/perfctr.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/hw_irq.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/hw_irq.h \
     $(wildcard include/config/x86/smp.h) \
   include/linux/profile.h \
     $(wildcard include/config/profiling.h) \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/irq.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/sections.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/irq.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/sections.h \
   include/asm-generic/sections.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/nmi.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/io.h \
-  /scratch/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/io_32.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/nmi.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/io.h \
+  /home/galtekar/src/logreplay/linux/linux-2.6.29.4-replay/arch/x86/include/asm/io_32.h \
   include/asm-generic/iomap.h \
   include/linux/vmalloc.h \
   drivers/perfctr/compat.h \

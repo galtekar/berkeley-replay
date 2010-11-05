@@ -1,4 +1,8 @@
-# vim:ts=4:sw=4:expandtab
+# Copyright (C) 2010 The Regents of the University of California. 
+# 
+# All rights reserved.
+#
+# Author: Gautam Altekar
 
 import struct
 import misc, msg_stub, syscall
@@ -216,3 +220,6 @@ def create(ctrl, tid, event_code):
     create_event_func = _event_map[event_code]
     ev = create_event_func(ctrl, tid)
     return ev
+
+# vim:ts=4:sw=4:expandtab
+

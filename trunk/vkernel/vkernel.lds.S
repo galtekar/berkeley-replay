@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2010 Regents of the University of California
+ * All rights reserved.
+ *
+ * Author: Gautam Altekar
+ */
+
 /* This file is preprocessed into vkernel.lds. */
 
 #define PAGE_SIZE 4096

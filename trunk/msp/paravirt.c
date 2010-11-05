@@ -155,12 +155,12 @@ msp_pgd_free(struct mm_struct *mm, pgd_t *pgd)
 #endif
 }
 
-/* Unfortunately for Lguest, the pv_mmu_ops for page tables were based on
+/* Unfortunately for us, the pv_mmu_ops for page tables were based on
  * native page table operations.  On native hardware you can set a new page
  * table entry whenever you want, but if you want to remove one you have to do
  * a TLB flush (a TLB is a little cache of page table entries kept by the CPU).
  *
- * So the lguest_set_pte_at() and lguest_set_pmd() functions above are only
+ * So the msp_set_pte_at() and msp_set_pmd() functions above are only
  * called when a valid entry is written, not when it's removed (ie. marked not
  * present).  Instead, this is where we come when the Guest wants to remove a
  * page table entry: we tell the Host to set that entry to 0 (ie. the present
@@ -264,47 +264,38 @@ msp_patch(u8 type, u16 clobber, void *ibuf, unsigned long addr, unsigned len)
 void
 paravirt_init(void)
 {
-#if 1
-	short kernel_cs;
+   short kernel_cs;
 
-	/* We're under msp_guest, paravirt is enabled, and we're running at
-	 * privilege level 0 as normal. */
-	pv_info.name = "MSP";
-	pv_info.paravirt_enabled = 1;
+   /* We're under msp_guest, paravirt is enabled, and we're running at
+    * privilege level 0 as normal. */
+   pv_info.name = "MSP";
+   pv_info.paravirt_enabled = 1;
 
-	savesegment(cs, kernel_cs);
-	//pv_info.kernel_rpl = 0;
-	pv_info.kernel_rpl = kernel_cs & SEGMENT_RPL_MASK;
-
+   savesegment(cs, kernel_cs);
+   pv_info.kernel_rpl = kernel_cs & SEGMENT_RPL_MASK;
+   /* Essential to specify a patching routine; default routine does not
+    * invoke our supplied write_cr3()!! */
    pv_init_ops.patch = msp_patch;
 
-   if (1) {
-      //pv_init_ops.arch_setup = msp_arch_setup;
-      pv_cpu_ops.cpuid = msp_cpuid;
+   //pv_init_ops.arch_setup = msp_arch_setup;
+   pv_cpu_ops.cpuid = msp_cpuid;
 
-      /* Pagetable management. */
-      pv_mmu_ops.write_cr3 = msp_write_cr3;
-      pv_mmu_ops.read_cr3 = msp_read_cr3;
+   /* Pagetable management. */
+   pv_mmu_ops.write_cr3 = msp_write_cr3;
+   pv_mmu_ops.read_cr3 = msp_read_cr3;
 
-      if (1) {
-         /* no need to intercept read_cr2, since guest receives page fault
-          * and is priviledged enough to see it. This is unlike a true 
-          * hypervisor (e.g., lguest), where the host receives the page 
-          * fault). */
-         if (1) {
-            pv_mmu_ops.flush_tlb_user = msp_flush_tlb_user;
-            pv_mmu_ops.flush_tlb_single = msp_flush_tlb_single;
-            pv_mmu_ops.flush_tlb_kernel = msp_flush_tlb_kernel;
-         }
-         if (1) {
-            pv_mmu_ops.set_pte = msp_set_pte;
-            pv_mmu_ops.set_pte_at = msp_set_pte_at;
-            pv_mmu_ops.set_pmd = msp_set_pmd;
-            pv_mmu_ops.pte_update = msp_pte_update;
-            pv_mmu_ops.pte_update_defer = msp_pte_update;
-            pv_mmu_ops.pgd_free = msp_pgd_free;
-         }
-      }
-   }
-#endif
+   /* no need to intercept read_cr2, since guest receives page fault
+    * and is priviledged enough to see it. This is unlike a true 
+    * hypervisor (e.g., lguest), where the host receives the page 
+    * fault). */
+   pv_mmu_ops.flush_tlb_user = msp_flush_tlb_user;
+   pv_mmu_ops.flush_tlb_single = msp_flush_tlb_single;
+   pv_mmu_ops.flush_tlb_kernel = msp_flush_tlb_kernel;
+
+   pv_mmu_ops.set_pte = msp_set_pte;
+   pv_mmu_ops.set_pte_at = msp_set_pte_at;
+   pv_mmu_ops.set_pmd = msp_set_pmd;
+   pv_mmu_ops.pte_update = msp_pte_update;
+   pv_mmu_ops.pte_update_defer = msp_pte_update;
+   pv_mmu_ops.pgd_free = msp_pgd_free;
 }
