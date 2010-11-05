@@ -1,8 +1,8 @@
-ROOT_DIR = $(shell readlink -f ../)
-include ../Rules.mk
+ROOT_DIR = $(shell readlink -f ../../)
+include $(ROOT_DIR)/Rules.mk
 
 AR = ar
-INCLUDES += -I$(PERFCTR_DIR)/linux/include/ -I$(PERFCTR_DIR)/usr.lib/ -I../ -I$(VEX_DIR)/pub/ -I$(VEX_DIR)/priv/
+INCLUDES += -I$(ROOT_DIR) -I$(LIBS_DIR) -I$(PERFCTR_DIR)/linux/include/ -I$(PERFCTR_DIR)/usr.lib/ -I$(VEX_DIR)/pub/ -I$(VEX_DIR)/priv/
 ARFLAGS = rv
 ASM_OFFSETS = asm-offsets
 CSOURCES = netops.c fdops.c debug.c sysnames.c errops.c hexops.c segops.c ringbuffer.c

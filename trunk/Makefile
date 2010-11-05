@@ -5,35 +5,35 @@ TEST_BIN=tests/regrtest/test.py
 INSTALL=install
 
 base:
-	-$(MAKE) -C $(THIRD_DIR)/dietlibc DEBUG=1
-	-$(MAKE) -C $(THIRD_DIR)/VEX
-	-$(MAKE) -C $(THIRD_DIR)/perfctr
-	-$(MAKE) -C libcommon
-	-$(MAKE) -C libcommon LIBC=glibc
+	-$(MAKE) -C $(LIBS_DIR)/dietlibc DEBUG=1
+	-$(MAKE) -C $(LIBS_DIR)/VEX
+	-$(MAKE) -C $(DRIVERS_DIR)/perfctr
+	-$(MAKE) -C $(LIBS_DIR)/libcommon
+	-$(MAKE) -C $(LIBS_DIR)libcommon LIBC=glibc
 	-$(MAKE) -C vkernel
-	-$(MAKE) -C distributed/api
+	-$(MAKE) -C distributed/engine
 
 all: base
 	#-$(MAKE) -C tests
 
 # Most development is done on the vkernel and then libcommon
 clean:
-	-$(MAKE) -C libcommon LIBC=glibc clean
-	-$(MAKE) -C libcommon clean
+	-$(MAKE) -C $(LIBS_DIR)/libcommon LIBC=glibc clean
+	-$(MAKE) -C $(LIBS_DIR)/libcommon clean
 	-$(MAKE) -C vkernel clean
-	-$(MAKE) -C distributed/api clean
+	-$(MAKE) -C distributed/engine clean
 
 
 # VEX is rarely updated/patched
 reallyclean: clean
 	-$(MAKE) -C tests clean
-	-$(MAKE) -C $(THIRD_DIR)/VEX clean
-	-$(MAKE) -C $(THIRD_DIR)/perfctr clean
+	-$(MAKE) -C $(LIBS_DIR)/VEX clean
+	-$(MAKE) -C $(DRIVERS_DIR)/perfctr clean
 
 # Dietlibc takes a while to compile and there is no need to
 # recompile it unless something changes.
 spotless: reallyclean
-	-$(MAKE) -C $(THIRD_DIR)/dietlibc clean
+	-$(MAKE) -C $(LIBS_DIR)/dietlibc clean
 
 install: all
 	$(INSTALL) -m444 include/vk.h /usr/include/vk.h

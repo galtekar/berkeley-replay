@@ -7,7 +7,7 @@
 #include "vkernel/public.h"
 #include "private.h"
 
-#include <msp.h>
+#include <msp/msp.h>
 
 /* 
  * We must record the results of CPUID so that we can replay

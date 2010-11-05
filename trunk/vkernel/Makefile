@@ -1,9 +1,9 @@
 ROOT_DIR = $(shell readlink -f ../)
-include ../Rules.mk
+include $(ROOT_DIR)/Rules.mk
 
 OBJDIR = $(BUILD_DIR)/vkernel
 
-INCLUDES += -I$(DIETLIBC_DIR)/include -I../ -I$(VEX_DIR)/pub -I$(VEX_DIR)/priv -I$(PERFCTR_DIR)/linux/include -I$(PERFCTR_DIR)/usr.lib
+INCLUDES += -I$(DIETLIBC_DIR)/include -I$(ROOT_DIR) -I$(LIBS_DIR) -I$(VEX_DIR)/pub -I$(VEX_DIR)/priv -I$(PERFCTR_DIR)/linux/include -I$(PERFCTR_DIR)/usr.lib
 CFLAGS += -msoft-float -nostdinc $(INCLUDES) -Wno-attributes -DUSING_DIET_LIBC=1 -DCG_SLOW_WRITE=0
 
 LIBS = $(LIBGCC) \

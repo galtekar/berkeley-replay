@@ -6,7 +6,17 @@ RELEASE_NAME=bdr
 BUILD=release
 STATS=all
 
-INCLUDES = -I$(ROOT_DIR)/include -I$(ROOT_DIR)/msp
+BUILD_DIR = $(ROOT_DIR)/build/x86-$(BUILD)
+LIBS_DIR = $(ROOT_DIR)/libs
+DRIVERS_DIR = $(ROOT_DIR)/drivers
+PERFCTR_DIR = $(DRIVERS_DIR)/perfctr
+MSP_DIR = $(DRIVERS_DIR)/msp
+DIETLIBC_DIR = $(LIBS_DIR)/dietlibc
+VEX_DIR = $(LIBS_DIR)/VEX
+VKERNEL_BIN = $(BUILD_DIR)/$(RELEASE_NAME)-kernel
+
+
+INCLUDES = -I$(ROOT_DIR)/include -I$(LIBS_DIR)/ -I$(DRIVERS_DIR)
 CFLAGS += -g -Wall -Werror -Wundef -Wno-trigraphs -Wshadow -fno-common -fno-strict-aliasing -Wno-attributes -fno-stack-protector -DRELEASE_NAME=\"$(RELEASE_NAME)\"
 
 
@@ -27,12 +37,5 @@ CFLAGS += -DMAX_NR_VCPU=$(MAX_NR_VCPU)
 else
 CFLAGS += -DMAX_NR_VCPU=2
 endif
-
-BUILD_DIR = $(ROOT_DIR)/build/x86-$(BUILD)
-THIRD_DIR = $(ROOT_DIR)/third-party
-PERFCTR_DIR = $(THIRD_DIR)/perfctr
-DIETLIBC_DIR = $(THIRD_DIR)/dietlibc
-VEX_DIR = $(THIRD_DIR)/VEX
-VKERNEL_BIN = $(BUILD_DIR)/$(RELEASE_NAME)-kernel
 
 LIBGCC = $(shell $(CC) -print-libgcc-file-name)
