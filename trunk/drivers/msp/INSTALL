@@ -1,5 +1,0 @@
-Installation:
-   o Recompile the kernel with the driver enabled. You can enable by
-   driver within the "menuconfig" utility.
-   o Run "./install.sh" to configure udev, so that the driver can be
-   accessed the non-root users.

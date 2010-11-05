@@ -1,0 +1,100 @@
+#####
+# Load the replay group
+dcgen
+load --debug-level=0 file:/tmp/bdr-galtekar/recordings/*
+#load --debug-level=0 file:/tmp/bdr-galtekar/recordings/Hypertable.Range*
+
+# Set to true if we want to verify that nothing is tainted
+py TEST_UNTAINTED_CASE = False
+#####
+# Setup a taint flow probe
+
+py msg_map = {}
+# For kfs: should match with dev and inode number rather than path,
+# since diferent paths can point to the same file
+py origin_files = set(["/home/galtekar/tst", "/scratch/galtekar/src/logreplay/bench/jobs/data_files/*", "/home/galtekar/src/logreplay/bench/jobs/data_files/*","/scratch/galtekar/src/logreplay/bench/jobs/hypertable/issue-63/*.tsv"])
+#py origin_files = set()
+py tainted_files = set()
+
+probe-add syscall::open*:return
+import syscall, fnmatch
+print "Syscall: name=%s retval=%d"%(syscall.get_name(__SYSNO__),\
+        __SYS_RETVAL__)
+fd = __SYS_RETVAL__
+if fd >= 0:
+    filename = __TASK__.get_filename_by_fd(fd)
+
+    is_data_file = False
+    global_filename = "%d:%s"%(__TASK__.ctrl.node_index, filename)
+    if global_filename not in tainted_files:
+        for name in origin_files:
+            if fnmatch.fnmatch(filename, name):
+                is_data_file = True
+                break
+    else:
+        is_data_file = True
+
+    if is_data_file == True and TEST_UNTAINTED_CASE == False:
+        __TASK__.set_plane_by_fd(fd)
+
+    print "Opened file: fd=%d name=%s is_data_file=%d"%(fd, filename,
+            is_data_file)
+end
+#
+#probe-add syscall:::return
+#print "syscall"
+#end
+
+probe-add io:file:write:return
+import binascii
+taint_bytes = __MSG__.get_taint()
+print "Writing to file:", __FILE__.get_name(), binascii.hexlify(taint_bytes[0:16]), "..."
+assert(len(taint_bytes) == __MSG__.len)
+if taint_bytes.count('\0') != len(taint_bytes):
+    global_filename = "%d:%s"%(__TASK__.ctrl.node_index, __FILE__.get_name())
+    print "tainting file:", global_filename
+    tainted_files.add(global_filename)
+    __FILE__.set_data_plane()
+    if TEST_UNTAINTED_CASE:
+        assert(0)
+end
+
+
+probe-add io:ipc:write:return
+import binascii
+print "Task", __TASK__.index, "sent:", (__MSG__.id, __MSG__.len)
+if __MSG__.id:
+    taint_bytes = __MSG__.get_taint()
+    #taint_bytes = ''.join([ str(0) ] * __MSG__.len)
+    assert( len(taint_bytes) == __MSG__.len )
+    print "%d bytes tainted: "%(taint_bytes.count('\1')), binascii.hexlify(taint_bytes[0:16]), "..."
+    msg_map[__MSG__.id] = taint_bytes
+    if TEST_UNTAINTED_CASE:
+        assert( taint_bytes.count('\0') == len(taint_bytes) )
+else:
+    print "Untagged message!"
+end
+
+probe-add io:ipc:peek,dequeue:return
+print "Task", __TASK__.index, "received:", (__MSG__.id, __MSG__.len)
+if __MSG__.id:
+    if __MSG__.id not in msg_map:
+        print "Message received before it was sent!"
+    else:
+        taint_bytes = msg_map[__MSG__.id]
+        if TEST_UNTAINTED_CASE:
+            assert( taint_bytes.count('\0') == len(taint_bytes) )
+        __MSG__.set_taint(taint_bytes[0:__MSG__.len])
+
+        if __EVENT__.func_name != "peek":
+            msg_map[__MSG__.id] = taint_bytes[__MSG__.len:]
+            if len(msg_map[__MSG__.id]) == 0:
+                del msg_map[__MSG__.id]
+else:
+    print "Untagged message!"
+end
+
+#bdr.probe_add("io:ipc:peek,dequeue:return", on_ipc_recv)
+
+continue
+exit

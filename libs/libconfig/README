@@ -1,0 +1,7 @@
+libconfig: a library for reading and writing configuration files
+
+* Must install flex 2.5.35 for scanner generation to work.
+   o some systems come with flex 2.5.4, which is actually an older release
+
+* Library uses floating point routines, hence library shouldn't be
+  called by vkernel after startup.

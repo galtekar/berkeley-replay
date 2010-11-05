@@ -1,8 +1,0 @@
-Purpose:
-
-How does VEX treat popular x86 idioms such as "xor %eax, %eax" and
-"sub %eax, %eax"? We can run this program and look at the IR to find
-out.
-
-This is also useful to verify that taint-flow analysis handles these
-idioms propertly (i.e., that taint is not propagated across them).

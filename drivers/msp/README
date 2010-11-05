@@ -1,0 +1,28 @@
+Welcome to the Linux Memory Sharing Protocol (MSP) Driver.
+Copyright (C) 2010 Regents of the University of California.
+All Rights Reserved.
+
+Author: Gautam Altekar
+
+Summary:
+   This driver enables user-mode tasks executing on distinct CPUs/cores
+   to share designated physical memory pages (or all user-addressable
+   pages if one so desires) in accordance with a supported memory
+   sharing protocol (MSP). The only supported MSP is the Concurrent-Read
+   Exclusive-Write (CREW) protocol.
+
+Credits:
+   The implementation closely follows the shadow pagetable model described
+   by Dunlap et al. in the SMP-ReVirt system (see Virtual Execution
+   Environments (VEE) '08). The key difference is the SMP-ReVirt was
+   implemented at the VMM level and was intended for whole-system memory
+   sharing, while the Linux MSP driver is designed for user-level and
+   task-specific memory sharing.
+
+Limitations:
+   o Only the CREW protocol is supported.
+   o XXX: several others
+
+Comments and criticism to:
+   Gautam Altekar
+   galtekar@cs.berkeley.edu

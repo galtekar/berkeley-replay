@@ -1,1 +1,0 @@
-pfmon -e retired_branch_type:conditional:call:return:indirect,retired_mispred_branch_type:conditional,branch_retired:mmnm:mmtm,mispred_branch_retired:bogus -u --pin-command --cpu-list=0 --smpl-raw -- /bin/ls -la

@@ -1,0 +1,4 @@
+libcommon: A convenience library used by liblog, libreplay, and logger
+(and potentially others). Only minimal and enduring functionality should
+be placed here. If it is application specific or is expected to frequently
+change, it belongs in upper layers.

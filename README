@@ -1,0 +1,45 @@
+   Berkeley Deterministic Replay (BDR) Release 0.1
+
+WHAT IS BDR?
+   BDR is a deterministic replay (also known as record/replay) tool for
+   reproducing executions of parallel (i.e., multi-core) and distributed
+   programs (those that communicate over a network). It is designed
+   for the Linux operating system, and is intended to scale to hundreds
+   of nodes.
+
+   BDR should ot being distributed for public use as it is currently
+   a research prototype. See the accompanying LINCENSE file for more
+   details.
+
+HARDWARE REQUIREMENTS:
+   BDR was designed for the x86 architecture, and in particular,
+   the Pentium IV and newer models. The machine must have an MMU and
+   performance counters.
+
+SOFTWARE REQUIREMENTS:
+   BDR was designed for Linux 2.6 and is known to work with 2.6.26 and
+   greater.  Only 32-bit Linux is currently supported, but 64-bit Linux
+   may be supported in the future. Any distribution of Linux will do.
+
+   Compiling BDR requires a working GCC (>= 4.2) installation and Python
+   2, version >= 6. Python 3 is not currently supported.
+
+COMPILING BDR:
+   - Do a "make clean", then a "make".
+
+INSTALLING BDR:
+   - Do a "make dist". This will create a directory "dist" that
+   will contain all the files you will need to record and replay BDR
+   recordings on a node. This directory may be copied to that remote
+   nodes you would like to include in the recording.
+
+RUNNING BDR:
+   - First, we need to setup your environment.  Add the dist/ directory
+   (see above) to your PATH and PYTHONPATH environment variables.
+
+   - Then to record, do "bdr-record /bin/my_fancy_distributed_program".
+   The recording will be saved by default to a local directory (see the
+   output of bdr-record to determine where).
+
+   - To replay all recordings in a directory, do "bdr-replay
+   file:/tmp/bdr-galtekar/recordings/*".

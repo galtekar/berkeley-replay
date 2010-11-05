@@ -1,0 +1,3 @@
+# List of BDR command-line args with which to instantiate tests
+record -d${sessiondir} ${cmd}
+replay
