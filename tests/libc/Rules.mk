@@ -1,3 +1,4 @@
+ROOT_DIR=../../../
 include $(ROOT_DIR)/Rules.mk
 
 #INCLUDES = 

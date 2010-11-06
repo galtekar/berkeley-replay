@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-
 # Copyright (C) 2010 The Regents of the University of California. 
 # 
 # All rights reserved.
 #
 # Author: Gautam Altekar
+#
+# vim:ts=4:sw=4:expandtab
 
 ######################################################################
 #
@@ -55,5 +56,3 @@ if __name__ == "__main__":
     group.add_members(args[0:])
     tty = TtyOutput(group)
     group.go()
-
-# vim:ts=4:sw=4:expandtab
