@@ -1,4 +1,0 @@
-#!/bin/bash
-
-make
-cd ../../djbdns;make codonssecureserver;make dnsquerygenerator

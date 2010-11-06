@@ -263,6 +263,7 @@ def start( rec, mode_str, id, node_id, opt_list=[], dbg_level=0, quiet=True ):
     opt_list = [ 
                 "Base.DirectExecutionEnabled=%d"%(int(misc.get_conf("de_enabled"))),
                 "Base.Debug.Level=%d"%(dbg_level),
+                "Base.TtyReplayEnabled=1",
                 "Base.CtrlHost=%s"%(socket.gethostname()),
                 "Base.CtrlPort=%s"%(server_port) ] + opt_list
 

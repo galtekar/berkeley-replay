@@ -1,5 +1,0 @@
-1_csplanetlab3.kaist.ac.kr_27000
-4_planet1.calgary.canet4.nodes.planet-lab.org_27000
-5_planet1.montreal.canet4.nodes.planet-lab.org_27000
-7_planet1.pittsburgh.intel-research.net_27000
-8_planet1.toronto.canet4.nodes.planet-lab.org_27000

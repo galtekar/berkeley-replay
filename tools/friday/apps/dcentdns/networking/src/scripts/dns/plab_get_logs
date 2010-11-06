@@ -1,4 +1,0 @@
-#! /bin/bash
-TOPOLOGY_FILE=$1
-MAP_FILE=$2
-./scripts/dns/get_logs.pl -l ucb_i3 -d /home/ucb_i3/dcentdns $TOPOLOGY_FILE $MAP_FILE

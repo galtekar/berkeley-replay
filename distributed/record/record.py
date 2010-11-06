@@ -34,7 +34,7 @@ env = os.environ
 def call_as_daemon( cmd_list, output_filename ):
     """Forks off a daemon that exec's a command.
     Uses standard double-fork method."""
-    print "%s: starting '%s'"%(my_name," ".join(cmd_list))
+    misc.log("%s: starting '%s'"%(my_name," ".join(cmd_list)))
     sys.stdout.flush()
     sys.stderr.flush()
     pid = os.fork()

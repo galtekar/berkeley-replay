@@ -8,8 +8,10 @@
 # vim:ts=4:sw=4:expandtab
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-import xmlrpclib
-import os, urlparse_custom, urlparse
+import xmlrpclib, sys, os
+sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
+sys.path.append(os.path.dirname(sys.argv[0])+"/../engine")
+import urlparse_custom, urlparse
 import misc, socket, sys, getopt, dfs, formdb, recording
 
 env = os.environ
@@ -103,14 +105,17 @@ if __name__ == "__main__":
     read_args()
     read_config()
 
+    misc.QUIET = False
+
     # For testing...
     if False:
         loc = "1d585c2a-8920-4cfd-af7b-42e74363bdd8"
         print lookup_var( loc, "COOL" )
         sys.exit(0)
 
+   
     server = SimpleXMLRPCServer(("localhost", 8000))
-    misc.log ("Listening on port 8000...")
+    misc.log ("Drone listening on port 8000...")
     server.register_function(cache_recording, "cache_recording")
     server.register_function(ping, "ping")
     server.register_function(lookup_var, "lookup_var")

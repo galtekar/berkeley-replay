@@ -1,6 +1,0 @@
-* Breakpoint 0, fix 0 ip address problem
-
-* Use breakpoint to verify status flag is actually changing, because
-the breakpoints aren't triggering
-
-* write predicate for detecting looping in sriram's code

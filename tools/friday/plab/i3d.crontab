@@ -1,3 +1,0 @@
-LOG_DIR=/home/ucb_i3/geels/
-# every five minutes:
-*/5 * * * *      cd $LOG_DIR && ./i3d.py clean >> $LOG_DIR/clean.log 2>&1

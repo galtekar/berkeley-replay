@@ -29,7 +29,7 @@ class TtyOutput:
             group.add_probe(spec, cb)
 
     def _on_post_tty_write(self, task, ev):
-        print ev.msg.get_data()
+        print ev.msg
         
 
 def usage():
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     group = controller.Controller()
     group.add_members(args[0:])
-    #tty = TtyOutput(group)
+    tty = TtyOutput(group)
     group.go()
 
 # vim:ts=4:sw=4:expandtab

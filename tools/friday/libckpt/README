@@ -1,7 +1,0 @@
-ckpt - process checkpoint library
-www.cs.wisc.edu/~zandy/ckpt
-Copyright (c) 2002-2004 Victor C. Zandy  zandy@cs.wisc.edu
-
-COPYING contains the distribution terms for ckpt (LGPL).
-
-This is a stripped-down version of Zandy's checkpoint library.

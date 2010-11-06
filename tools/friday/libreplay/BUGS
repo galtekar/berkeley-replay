@@ -1,4 +1,0 @@
-* The value returned by shmget() during replay differs from that of
-  original execution.
-
-* The address returned by shmat() differs for replay and original execution.

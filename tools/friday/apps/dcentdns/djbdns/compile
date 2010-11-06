@@ -1,3 +1,0 @@
-#!/bin/sh
-# WARNING: This file was auto-generated. Do not edit!
-exec gcc -O2 -g -Wimplicit -Wunused -Wcomment -Wchar-subscripts -Wuninitialized -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings -c ${1+"$@"} -I /usr/local/ssl/include/openssl

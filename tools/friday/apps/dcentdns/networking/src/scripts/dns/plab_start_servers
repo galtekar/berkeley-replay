@@ -1,4 +1,0 @@
-#! /bin/bash
-TOPOLOGY_FILE=$1
-MAP_FILE=$2
-./scripts/dns/start_servers.pl  -x -l ucb_i3 -d /home/ucb_i3/galtekar/dcentdns $TOPOLOGY_FILE $MAP_FILE

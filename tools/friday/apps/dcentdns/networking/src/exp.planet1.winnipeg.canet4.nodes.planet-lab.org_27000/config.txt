@@ -1,9 +1,0 @@
-address=9_planet1.winnipeg.canet4.nodes.planet-lab.org_27000
-dns_port=27002
-polling_interval=5:0
-pv_interval=5:0
-is_malicious=false
-neighbor_file=neighbor.txt
-level=verbose
-scheduler=priority
-n=10

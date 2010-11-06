@@ -1,4 +1,0 @@
------ What is this? -----
-
-A dynamic data-race detector, like the one implemented in the RecPlay
-record/replay system.

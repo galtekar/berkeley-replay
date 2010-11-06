@@ -11,7 +11,7 @@ import solver
 env = os.environ
 
 my_dir=os.path.dirname(sys.argv[0])
-REPLAY_DONE_BIN=my_dir+"/worker.py"
+DRONE_BIN=my_dir+"/bdr-drone"
 
 class Task:
     def __init__( self, index, ctrl, pid, tid ):
@@ -175,7 +175,6 @@ class Controller:
         SECTION_NAME = "replay"
         DEFAULT_PREFS = { 
                 "cache_base_dir" : "/tmp/bdr-"+env["USER"]+"/replay-cache/",
-                "vkernel_bin" : "/usr/bin/bdr-kernel",
                 "hadoop_bin" : "/usr/bin/hadoop",
         }
         pref = misc.load_preferences(SECTION_NAME, DEFAULT_PREFS)
@@ -183,7 +182,7 @@ class Controller:
             die("ERROR: Problem with configuration files\n")
 
     def _start_workers(self, node_list):
-        misc.out( 'Bringing up the cluster...' )
+        misc.out( 'Bringing up the replay cluster...' )
         node_names = set([ "localhost" ])
 
         ssh_bin = misc.get_conf("ssh_bin")
@@ -198,9 +197,9 @@ class Controller:
                     node = Node("http://%s:8000/"%(hostname))
                     node.ping()
                 except:
-                    #print "Starting " + REPLAY_DONE_BIN
+                    #print "Starting " + DRONE_BIN
                     if i == 0:
-                        child = misc.start_child( [ssh_bin, hostname, REPLAY_DRONE_BIN ], out_file=file('worker.out', 'a') )
+                        child = misc.start_child( [ssh_bin, hostname, DRONE_BIN ], out_file=file('worker.out', 'a') )
                         time.sleep(1)
                 else:
                     break

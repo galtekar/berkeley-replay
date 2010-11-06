@@ -1,2 +1,0 @@
-* The client table data structure is an array. This is too inefficient.
-Move to a hashtable.

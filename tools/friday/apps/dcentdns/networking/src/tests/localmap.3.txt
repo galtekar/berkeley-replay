@@ -1,3 +1,0 @@
-0=localhost-3000
-1=localhost-3003
-2=localhost-3006

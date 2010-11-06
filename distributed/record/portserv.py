@@ -5,7 +5,7 @@
 # Author: Gautam Altekar
 
 import os, sys, socket, select, struct, time, uuid
-sys.path.append("../common")
+sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
 import misc
 
 _reg_sock = None
