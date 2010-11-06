@@ -161,7 +161,7 @@ def run( pr, event ):
     """
 
     # Keep going even if there is hit, unless the action explicitly tells
-    # us to stop
+    # us to stop.
     should_continue = True
     if pr.action_func:
         pr.action_func(event.task, event)

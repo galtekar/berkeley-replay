@@ -186,7 +186,7 @@ class Controllee:
         self._do_brkpt_work( msg_stub.MSG_REQ_SET_BRKPT, tid,
                 brkpt_kind, sysno_list )
 
-    def del_brkpt( self, tid, brkpt_kind, loc ):
+    def del_brkpt( self, tid, brkpt_kind, sysno_list ):
         self._do_brkpt_work( msg_stub.MSG_REQ_DEL_BRKPT, tid,
                 brkpt_kind, sysno_list )
     

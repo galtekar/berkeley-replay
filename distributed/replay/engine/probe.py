@@ -1,7 +1,11 @@
-# author: Gautam Altekar
-# $Id: probe.py,v 1.18 2010/07/09 11:48:16 galtekar Exp $
+# Copyright (C) 2010 The Regents of the University of California. 
+# 
+# All rights reserved.
+#
+# Author: Gautam Altekar
 #
 # vim:ts=4:sw=4:expandtab
+######################################################################
 
 import struct, sys
 import misc, action, controller, syscall, msg_stub, events, fnmatch
@@ -46,7 +50,6 @@ class Probe:
         global _nr_probes_created
 
         self.spec = ProbeSpec(spec, valid_specs)
-        self.is_enabled = False
         self.action = None # Do nothing, will stop replay
         self.nr_hits = 0
         self.index = _nr_probes_created
@@ -58,19 +61,25 @@ class Probe:
 
         self.action_locals = {}
 
-    def enable( self ):
-        self.is_enabled = True
-        self.task_list = self.ctrl_group.get_active_tasks()
+#    def enable( self ):
+#        self.is_enabled = True
+#        self.task_list = self.ctrl_group.get_active_tasks()
+#
+#        for task in self.task_list:
+#            self.enable_on_task(task)
+#
+#    def disable( self ):
+#        self.is_enabled = False
+#
+#        for task in self.task_list:
+#            self.disable_on_task(task)
+#        self.task_list = None
 
-        for task in self.task_list:
-            self.enable_on_task(task)
+    def register(self, task):
+        assert(0)
 
-    def disable( self ):
-        self.is_enabled = False
-
-        for task in self.task_list:
-            self.disable_on_task(task)
-        self.task_list = None
+    def deregister(self, task):
+        assert(0)
 
     def on_event( self ):
         # Needs to be overridden by a derived class
@@ -139,7 +148,7 @@ class Probe:
 #            assert( len(self.return_addr_by_task) == 0 )
 #
 class SyscallProbe(Probe):
-    def __init__( self, ctrl_group, spec ):
+    def __init__(self, ctrl_group, spec):
         valid_specs = (["main", "libs"], syscall.index_by_name.keys(),\
                 ["entry", "return"])
         Probe.__init__(self, ctrl_group, spec, valid_specs)
@@ -157,14 +166,13 @@ class SyscallProbe(Probe):
         assert(len(self.brkpt_list))
 
     def on_event(self, event):
-
         if event.sysno in self.sysno_list:# and event.spec.name in self.spec.names:
 #            for arg_index, reg in [ (0, "bx") , (1, "cx"), (2, "dx"), (3, "si"), (4, "di"), (5, "bp") ]:
 #                self.arg_list[arg_index] = get_reg_bytes_as_int(event.task, reg)
             return True
         return False
 
-    def enable_on_task( self, task ):
+    def register( self, task ):
         assert(len(self.brkpt_list))
         assert(len(self.sysno_list))
         #print self.brkpt_list
@@ -172,12 +180,27 @@ class SyscallProbe(Probe):
         for brkpt_kind in self.brkpt_list:
             task.set_brkpt( brkpt_kind, self.sysno_list )
 
-    def disable_on_task( self, task ):
+    def deregister( self, task ):
         assert(len(self.brkpt_list))
         assert(len(self.sysno_list))
         for brkpt_kind in self.brkpt_list:
             task.del_brkpt( brkpt_kind, self.sysno_list )
 
+class SysProbe(Probe):
+    def __init__(self, ctrl_group, spec):
+        valid_specs = (["task"], ["start"], ["return"])
+        Probe.__init__(self, ctrl_group, spec, valid_specs)
+
+    def on_event(self, event):
+        if isinstance(event, events.TaskEvent) and event.spec.function in self.spec.functions:
+            return True
+        return False
+
+    def register(self, task):
+        return
+
+    def deregister(self, task):
+        return
 
 class IoProbe(Probe):
     def __init__(self, ctrl_group, spec):
@@ -219,11 +242,11 @@ class IoProbe(Probe):
                 return True
         return False
 
-    def enable_on_task(self, task):
+    def register(self, task):
         for brkpt_kind in self.brkpt_list:
             task.set_brkpt(brkpt_kind, 0)
 
-    def disable_on_task(self, task):
+    def deregister(self, task):
         for brkpt_kind in self.brkpt_list:
             task.del_brkpt(brkpt_kind, 0)
 
@@ -256,8 +279,7 @@ def check_for_hits( event ):
     for pr in _probe_map.values():
         misc.debug("Probe:", pr, "provider:",
                 pr.spec.provider, "functions:", pr.spec.functions)
-        if pr.is_enabled == True and \
-           event.spec.provider == pr.spec.provider and \
+        if event.spec.provider == pr.spec.provider and \
            event.spec.function in pr.spec.functions and \
            pr.on_event( event ) == True:
             got_hit = True
@@ -271,6 +293,7 @@ def check_for_hits( event ):
 
 _probe_providers = {
         #"source"  : lambda g,w: SourceProbe(g,w),
+        "sys"     : lambda g,w: SysProbe(g,w),
         "syscall" : lambda g,w: SyscallProbe(g,w),
         "io"      : lambda g,w: IoProbe(g,w),
         }
@@ -293,7 +316,7 @@ _probe_providers = {
 #
 #    return _set_probe_action( pr, func )'
 
-def create(spec, group, func):
+def create(group, spec, func):
     provider_spec = spec.split(':')[0]
     try:
         pr = _probe_providers[provider_spec](group, spec)
@@ -301,47 +324,47 @@ def create(spec, group, func):
         raise ProbeException("Unrecognized probe provider:",
             provider_spec)
 
-	pr.enable()
     _set_probe_action( pr, func )
     return pr
 
-
-def add_wrapper( words ):
-    if len(words) < 1:
-        misc.error( "Requires at least one argument" )
-        return True
-    return add(words[0], None)
-
-def list_wrapper( words ):
-    nr_enabled = 0
-    for index, pr in sorted(_probe_map.items()):
-        print pr.index, pr.spec.provider, pr.spec.modules, \
-                pr.spec.functions, pr.spec.names, pr.is_enabled
-        if pr.is_enabled:
-            nr_enabled += 1
-    print "%d/%d probes enabled"%(nr_enabled, len(_probe_map))
-    return True
-
-def enable_wrapper( words ):
-    if len(words) < 1:
-        misc.error( "Requires at least one probe id argument" )
-        return True
-
-    for word in words:
-        index = int(word)
-        pr = _probe_map[index]
-        if pr.is_enabled == False:
-            pr.enable()
-    return True
-
-def disable_wrapper( words ):
-    if len(words) < 1:
-        misc.error( "Requires at least one probe id argument" )
-        return True
-
-    for word in words:
-        index = int(word)
-        pr = _probe_map[index]
-        if pr.is_enabled == True:
-            pr.disable()
-    return True
+# XXX: This functionality should not be in the replay engine; it should be
+# moved to the console plugin.
+#def add_wrapper( words ):
+#    if len(words) < 1:
+#        misc.error( "Requires at least one argument" )
+#        return True
+#    return add(words[0], None)
+#
+#def list_wrapper( words ):
+#    nr_enabled = 0
+#    for index, pr in sorted(_probe_map.items()):
+#        print pr.index, pr.spec.provider, pr.spec.modules, \
+#                pr.spec.functions, pr.spec.names
+#        if pr.is_enabled:
+#            nr_enabled += 1
+#    print "%d/%d probes enabled"%(nr_enabled, len(_probe_map))
+#    return True
+#
+#def enable_wrapper( words ):
+#    if len(words) < 1:
+#        misc.error( "Requires at least one probe id argument" )
+#        return True
+#
+#    for word in words:
+#        index = int(word)
+#        pr = _probe_map[index]
+#        if pr.is_enabled == False:
+#            pr.enable()
+#    return True
+#
+#def disable_wrapper( words ):
+#    if len(words) < 1:
+#        misc.error( "Requires at least one probe id argument" )
+#        return True
+#
+#    for word in words:
+#        index = int(word)
+#        pr = _probe_map[index]
+#        if pr.is_enabled == True:
+#            pr.disable()
+#    return True

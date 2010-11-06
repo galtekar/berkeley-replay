@@ -3,6 +3,8 @@
 # All rights reserved.
 #
 # Author: Gautam Altekar
+#
+# vim:ts=4:sw=4:expandtab
 
 import struct
 import misc, msg_stub, syscall
@@ -31,7 +33,7 @@ class TaskEvent(Event):
     def __init__( self, ctrl, tid ):
         Event.__init__( self, ctrl, tid )
         self.task = None
-        self.spec.provider = "task"
+        self.spec.provider = "sys"
 
 class StartEvent(TaskEvent):
     def __init__( self, ctrl, tid ):
@@ -93,10 +95,11 @@ class SyscallEvent(Event):
 
 
 class Message():
-    def __init__( self, ctrl, id, len):
+    def __init__( self, ctrl, id, len, iov_list):
         self.ctrl = ctrl
         self.id = id
         self.len = len
+        self.iov_list = iov_list
 
     def get_taint( self ):
         req_msg = struct.pack( '!L', msg_stub.MSG_REQ_GET_MSG_TAINT )
@@ -110,6 +113,7 @@ class Message():
         req_msg = struct.pack( '!L', msg_stub.MSG_REQ_SET_MSG_TAINT )
         self.ctrl.sock.sendall( req_msg)
         self.ctrl.sock.sendall( taint_bytes )
+
 
 class File():
     def __init__(self, ctrl, ino_major, sock_family, sock_type, sock_proto, object_id):
@@ -175,13 +179,19 @@ class IoMsgEvent(IoEvent):
     def msg(self):
         req_msg = struct.pack( '!L', msg_stub.MSG_REQ_GET_MSG_INFO )
         self.ctrl.sock.sendall( req_msg )
-        fmt = '!LLLLQL'
+        fmt = '!LLLLQLL'
         data = misc.recvall(self.ctrl.sock, struct.calcsize(fmt))
-        (id1,id2,id3,id4,msg_idx,buf_len) = struct.unpack(fmt, data)
+        (id1,id2,id3,id4,msg_idx,buf_len,nr_iovs) = struct.unpack(fmt, data)
         id_str = "%d-%d-%d-%d-%d"%(id1,id2,id3,id4,msg_idx)
         if id_str == "0-0-0-0-0":
             id_str = None
-        return Message(self.ctrl, id_str, buf_len)
+        iov_fmt = '!LL'
+        iov_list = []
+        for i in range(nr_iovs):
+            iov_data = misc.recvall(self.ctrl.sock, struct.calcsize(iov_fmt))
+            (start, len) = struct.unpack(iov_fmt, iov_data)
+            iov_list.append((start, len))
+        return Message(self.ctrl, id_str, buf_len, iov_list)
 
 class IoPeekEvent(IoMsgEvent):
     def __init__(self, ctrl, tid):
@@ -218,8 +228,4 @@ _event_map = {
 ###### Functions
 def create(ctrl, tid, event_code):
     create_event_func = _event_map[event_code]
-    ev = create_event_func(ctrl, tid)
-    return ev
-
-# vim:ts=4:sw=4:expandtab
-
+    return create_event_func(ctrl, tid)

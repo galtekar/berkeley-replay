@@ -112,6 +112,12 @@ class Task:
     def get_mem_bytes( self, start_offset, len_bytes ):
         return self._read_state( self.STATE_MEM, start_offset, len_bytes )
 
+    def get_iov_bytes( self, iov ):
+        bytes = []
+        for (start, len) in iov:
+            bytes.append(self.get_mem_bytes(start, len))
+        return bytes
+
     def set_brkpt( self, brkpt_kind, loc ):
         self.ctrl.set_brkpt( self.tid, brkpt_kind, loc )
         return
@@ -149,7 +155,7 @@ class Controller:
     modules query the controller for distributed (i.e., controllee) 
     state."""
 
-    def __init__( self, dbg_level=0, start_vclock=0,
+    def __init__( self, plugins=[], dbg_level=0, start_vclock=0,
             jit_enabled=True, verify_enabled=False ):
         self.replay_controllees_by_index = {}  
         self.nr_controllees_created = 0
@@ -172,6 +178,14 @@ class Controller:
         self._start_workers(self.node_list)
 
         group_set.add(self)
+
+        # Create the probes requested by the plugins
+        self.probe_list = []
+        for pl in plugins:
+            for (spec, func) in pl.probe_spec_list:
+                pr = probe.create(self, spec, func)
+                self.probe_list.append(pr)
+
 
     def _read_config(self):
         SECTION_NAME = "replay"
@@ -215,28 +229,44 @@ class Controller:
         #pbar.finish()
         misc.log( 'All %d node(s) initialized.'%(len(node_names)) )
 
+#    def add_probe(self, spec, func=None):
+#        pr = probe.create(spec, self, func)
+#        misc.debug( "Global probe %d: %s"%(pr.index, pr) )
+#        return
+
+
     def _add_task( self, ctrl, pid, tid ):
         index = self.nr_tasks_created
 
+        # Add the task to our internal lists/maps
         task = Task( index, ctrl, pid, tid )
         self.task_by_tid[tid] = task
-
         self.nr_tasks_created += 1
         self.tasks_by_index[index] = task
         self.current_tasks_by_index.add(index)
 
+        # Register the task with all probes
+        for pr in self.probe_list:
+            pr.register(task)
+
+        return task
+
     def _remove_task( self, tid ):
-        index = self.task_by_tid[tid].index
+        task = self.task_by_tid[tid]
+
+        # Deregister the task with all probes
+        for pr in self.probe_list:
+            pr.deregister(task)
 
         # Update local
         del self.task_by_tid[tid]
 
         # Update parent
+        index = task.index
         del self.tasks_by_index[index]
         if index in self.current_tasks_by_index:
             self.current_tasks_by_index.remove(index)
         misc.debug( "after remove:", self.tasks_by_index )
-
 
     def kill_ctrl( self, ctrl ):
         debug( "Removing ctrl index:", ctrl.index )
@@ -280,7 +310,7 @@ class Controller:
         if self.start_vclock:
             at_vclock_str = "to %d"%self.start_vclock
         # Accept connections from controllees
-        misc.log( "Loading", rec.url.geturl(), at_vclock_str )
+        misc.log( "Loading recording", rec.url.geturl(), at_vclock_str )
 
         try:
             #if misc.is_known_control(rec.url.geturl()):
@@ -363,7 +393,7 @@ class Controller:
                 rec_list.append( rec )
         return rec_list
 
-    def add_members( self, url_list ):
+    def load( self, url_list ):
         """Opens a replay process for a specified address and time.
         If start_vclock is None, start replay from beginning of available
         logs. Otherwise, find a log that starts at (or crosses, if
@@ -393,18 +423,25 @@ class Controller:
     def _handle_event(self, event):
         is_ctrl_dead = False
 
-        if isinstance( event, events.StartEvent ):
-            event.task = self._add_task( event.ctrl, event.pid, event.tid )
-        else:
-            if isinstance( event, events.ShutdownEvent ):
-                is_ctrl_dead = True
-                self.kill_ctrl(event.ctrl)
-            else:
-                event.task = self.task_by_tid[event.tid]
-                if isinstance( event, events.ExitEvent ):
-                    self._remove_task( event.tid )
+        misc.debug("_handle_event:", event)
 
-        (got_hit, should_continue) = probe.check_for_hits( event )
+        if isinstance(event, events.StartEvent):
+            event.task = self._add_task(event.ctrl, event.pid, event.tid)
+        elif isinstance(event, events.ShutdownEvent):
+            event.task = None
+        else:
+            event.task = self.task_by_tid[event.tid]
+
+        (got_hit, should_continue) = probe.check_for_hits(event)
+
+        # Do this after we check for hits so that probes can be notified 
+        # of the exit event.
+        if isinstance(event, events.ExitEvent):
+            self._remove_task( event.tid )
+        elif isinstance(event, events.ShutdownEvent):
+            self.kill_ctrl(event.ctrl)
+            is_ctrl_dead = True
+
         return (is_ctrl_dead, should_continue)
 
 
@@ -504,6 +541,12 @@ class Controller:
                     elif ctrl.sock in ready_socks[2]:
                         misc.error( "Controller pipe broken" )
                         return
+                except select.error as (errno, errstr):
+                    if errno == 4: # EINTR --> we got a signal, e.g., SIGWINCH
+                        pass
+                    else:
+                        raise
+
                 except KeyboardInterrupt:
                     ctrl.pause()
 
@@ -527,15 +570,6 @@ class Controller:
     def advance(self, target_vclock=None):
         return self._advance_controllees(target_vclock)
 
-    def go(self):
-        self.advance("forever")
-        return
-
-    def add_probe(self, spec, func=None):
-        pr = probe.create(spec, self, func)
-        misc.debug( "Global probe %d: %s"%(pr.index, pr) )
-        return
-
     def get_time(self):
         start_vclocks = []
         end_vclocks = []
@@ -551,6 +585,7 @@ class Controller:
 
 @atexit.register
 def cleanup():
+    misc.log("Cleaning up and exiting.")
     for group in group_set:
         group.kill_all_ctrls()
     return

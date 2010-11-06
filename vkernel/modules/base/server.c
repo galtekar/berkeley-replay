@@ -718,25 +718,27 @@ ServerHandleIoMsgReqs(const int fd, const VkReqTag tag, void *arg)
       {
          uuid_t uuid;
          uint64_t msg_idx = 0;
+         struct IoBuffer *bufp;
+         ssize_t len;
+
          memset(&uuid, 0, sizeof(uuid));
          if (chunk_ptr->tag_len) {
             memcpy(&uuid, tag_ptr->uuid, sizeof(uuid));
             msg_idx = tag_ptr->msg_idx;
          }
 
-         const ssize_t len = NetOps_Pack(buf, sizeof(buf), "LLLLQL",
-               uuid[0], uuid[1], uuid[2], uuid[3], msg_idx, total_len);
-         ASSERT(len > 0);
-         UNUSED const ssize_t res = NetOps_SendAll(ctrl_fd, buf, len, 0);
-         ASSERT(res == len);
+         len = NetOps_Pack(buf, sizeof(buf), "LLLLQLL",
+               uuid[0], uuid[1], uuid[2], uuid[3], msg_idx, total_len,
+               iov_ptr->len);
+         NetOps_SendAll(ctrl_fd, buf, len, 0);
+
+         list_for_each_entry(bufp, &iov_ptr->iov_list, list) {
+            len = NetOps_Pack(buf, sizeof(buf), "LL",
+               bufp->base, bufp->len);
+            NetOps_SendAll(ctrl_fd, buf, len, 0);
+         }
          break;
       }
-#if 0
-   case VK_REQ_GET_MSG_DATA:
-      UNUSED const ssize_t res = NetOps_SendAll(ctrl_fd, buf, len, 0);
-      ASSERT(res == len);
-      break;
-#endif
    default:
       was_handled = 0;
       break;
