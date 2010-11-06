@@ -277,6 +277,28 @@ GateRecordReplayRegs(const uint off, const size_t len)
    } END_WITH_LOG_ENTRY(0);
 }
 
+static void
+GateRecordReplayVclock()
+{
+   DO_WITH_LOG_ENTRY(VclockState) {
+      if (VCPU_IsLogging()) {
+         uint64_t last_clock = curr_vcpu->last_clock, 
+                  new_clock = get_sys_micros();
+#if PRODUCT
+#error "XXX: what if system time gets reset in between?
+#else
+         int64_t time_elapsed_since_last_event = (new_clock - last_clock);
+#endif
+
+         curr_vcpu->vclock += time_elapsed_since_last_event;
+         curr_vcpu->last_clock = new_clock;
+         entryp->vclock = curr_vcpu->vclock;
+      } else if (VCPU_IsReplaying()) {
+         curr_vcpu->vclock = entryp->vclock;
+      }
+   } END_WITH_LOG_ENTRY(0);
+}
+
 
 /* Work common to entrance from DE and BT mode. */
 static INLINE void
@@ -299,6 +321,7 @@ GateCommonWork()
    ASSERT(len <= 256);
 
    GateRecordReplayRegs(off, len);
+   GateRecordReplayVclock();
 
    if (Task_TestFlag(current, TIF_SYSCALL)) {
       DEBUG_MSG(5, "Syscall vector.\n");

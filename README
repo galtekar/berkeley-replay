@@ -44,8 +44,8 @@ INSTALLING BDR:
    ease distribution.
 
 RUNNING BDR:
-   - First, we need to setup your environment.  Add the dist/ directory
-   (see above) to your PATH and PYTHONPATH environment variables.
+   - First, we need to setup your environment.  Add the installation directory
+   (see above) to your PATH.
 
    - Then to record, do "bdr-record /bin/my_fancy_distributed_program".
    The recording will be saved by default to a local directory (see the

@@ -285,6 +285,10 @@ LOGENTRYDEF(RegisterState,
    /* intentionally left empty, variable length data. */
 )
 
+LOGENTRYDEF(VclockState,
+   uint64_t vclock;
+)
+
 /* Lock events. */
 
 LOGENTRYDEF(SegmentEvent,

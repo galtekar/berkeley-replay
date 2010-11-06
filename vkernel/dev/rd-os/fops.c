@@ -284,14 +284,9 @@ WrapOnTagSend(const char *tagBuf, size_t tagLen)
 {
    ASSERT(sizeof(struct MsgTag) == tagLen);
 
-   const struct MsgTag *tagP = (const struct MsgTag *) tagBuf;
+   UNUSED const struct MsgTag *tagP = (const struct MsgTag *) tagBuf;
 
    ASSERT(tagP->vclock - curr_vcpu->vclock >= 0);
-   /* 
-    * Update the vclock. The plus 1 is to make sure that it is 
-    * strictly increasing.
-    */
-   curr_vcpu->vclock = tagP->vclock + 1;
 
    DEBUG_MSG(5, "msg_idx=%llu new vclock=%llu\n", tagP->msg_idx, curr_vcpu->vclock);
    DEBUG_HEXDUMP(5, "uuid", (char*)&tagP->uuid, sizeof(tagP->uuid));
@@ -304,23 +299,7 @@ WrapOnMakeTag(char *tagBuf, size_t bufLen)
 
    struct MsgTag *tagP = (struct MsgTag *) tagBuf;
 
-   /* XXX: make sure curr_vcpu->last_clock is initialized. */
-   ASSERT(curr_vcpu->last_clock > 0);
-
-   /* XXX: the impact of this sys_gettimeofday() is likely to be
-    * non-negligible. */
-   uint64_t last_clock = curr_vcpu->last_clock, 
-            new_clock = get_sys_micros();
-
-#if PRODUCT
-#error "XXX: what if system time gets reset in between?
-#else
-   int64_t time_elapsed_since_last_event =
-      (new_clock - last_clock);
-   ASSERT_UNIMPLEMENTED(time_elapsed_since_last_event >= 0);
-#endif
-
-   tagP->vclock = curr_vcpu->vclock + time_elapsed_since_last_event;
+   tagP->vclock = curr_vcpu->vclock;
    tagP->msg_idx = curr_vcpu->msg_idx++;
    memcpy(tagP->uuid, curr_vcpu->uuid, sizeof(tagP->uuid));
 
@@ -331,8 +310,6 @@ WrapOnMakeTag(char *tagBuf, size_t bufLen)
    }
    DEBUG_MSG(6, "msg_idx=%d\n", tagP->msg_idx);
 #endif
-
-   curr_vcpu->last_clock = new_clock;
 
    return sizeof(*tagP);
 }

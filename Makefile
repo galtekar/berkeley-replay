@@ -14,6 +14,7 @@ base:
 	-$(MAKE) -C $(LIBS_DIR)/libcommon LIBC=glibc
 	-$(MAKE) -C vkernel
 	-$(MAKE) -C $(DRE_DIR)
+	@echo "##### Success. Build complete."
 
 
 dist: install distclean
@@ -51,10 +52,10 @@ install: all installclean
 	@cp -r distributed $(INSTALL_DIR)
 	@mkdir $(INSTALL_DIR)/bin
 	@cp $(VKERNEL_BIN) $(INSTALL_DIR)/bin
-	@ln -s ../record/record.py $(INSTALL_DIR)/bin/bdr-record
-	@ln -s ../record/portserv.py $(INSTALL_DIR)/bin/bdr-portserv
-	@ln -s ../replay/plugins/replay.py $(INSTALL_DIR)/bin/bdr-replay
-	@ln -s ../replay/engine/drone.py $(INSTALL_DIR)/bin/bdr-drone
+	@ln -s ../record/record.py $(INSTALL_DIR)/bin/$(RELEASE_NAME)-record
+	@ln -s ../record/portserv.py $(INSTALL_DIR)/bin/$(RELEASE_NAME)-portserv
+	@ln -s ../replay/plugins/replay.py $(INSTALL_DIR)/bin/$(RELEASE_NAME)-replay
+	@ln -s ../replay/engine/drone.py $(INSTALL_DIR)/bin/$(RELEASE_NAME)-drone
 	@ln -s replay/engine $(INSTALL_DIR)/engine
 	@echo "##### Success."
 

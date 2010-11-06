@@ -2,6 +2,8 @@
 # All rights reserved.
 #
 # Author: Gautam Altekar
+#
+# vim:ts=4:sw=4:expandtab
 import sys, os, heapq, socket, random, select, dbm, atexit, xmlrpclib
 import controllee, misc, msg_stub, probe, events, struct
 import urlparse_custom, urlparse, dfs, fnmatch, recording
@@ -182,7 +184,7 @@ class Controller:
             die("ERROR: Problem with configuration files\n")
 
     def _start_workers(self, node_list):
-        misc.out( 'Bringing up the replay cluster...' )
+        misc.log( 'Bringing up the replay cluster...' )
         node_names = set([ "localhost" ])
 
         ssh_bin = misc.get_conf("ssh_bin")
@@ -211,7 +213,7 @@ class Controller:
             count += 1
             #pbar.update(count)
         #pbar.finish()
-        misc.out( 'All %d node(s) initialized.'%(len(node_names)) )
+        misc.log( 'All %d node(s) initialized.'%(len(node_names)) )
 
     def _add_task( self, ctrl, pid, tid ):
         index = self.nr_tasks_created
@@ -278,7 +280,7 @@ class Controller:
         if self.start_vclock:
             at_vclock_str = "to %d"%self.start_vclock
         # Accept connections from controllees
-        misc.out( "Loading", rec.url.geturl(), at_vclock_str )
+        misc.log( "Loading", rec.url.geturl(), at_vclock_str )
 
         try:
             #if misc.is_known_control(rec.url.geturl()):
@@ -417,17 +419,12 @@ class Controller:
                 self.replay_controllees_by_index.values()]
         heapq.heapify( scheduler_heap )
 
-        # Which controllers are still working:
+        # Which controllers are still working?
         ctrl_str_list = [str(ctrl) for ignore,ctrl in scheduler_heap]
         if not ctrl_str_list:
-            error( "No recordings to replay." )
-            return
-#        elif len(ctrl_str_list) == 1:
-#            note( "Advancing recordings:", ctrl_str_list[0] )
-#        else:
-#            ctrl_str_list.sort()
-#            note( "Advancing %d recordings:\n"%len(ctrl_str_list),
-#                 "\n".join(ctrl_str_list) )
+            # Looks like all controllers have been replayed
+            misc.debug("No more controllers to replay.")
+            return None
 
         # Convert relative time if necessary
         lowest_vclock,ctrl = scheduler_heap[0]
@@ -446,10 +443,10 @@ class Controller:
                 pass        # No qualifier on "advancing..." above.
             else:
                 target_vclock = safe_long(target_vclock)    # Make sure to convert from string
-                misc.out( "\tto time %d (%s)"%(target_vclock,
+                misc.debug( "\tto time %d (%s)"%(target_vclock,
                         time.ctime(target_vclock/1000000)) )
         else:
-            misc.out( "\tone step" )
+            misc.debug( "\tone step" )
         orig_vclock = None        # For timing statistics
 
         # Now repeatedly advance the first node in the heap.
@@ -462,6 +459,8 @@ class Controller:
             #if random.random() < 0.001:    # Status message
             #    misc.out( lowest_vclock )
             if target_vclock and (lowest_vclock >= target_vclock):
+                misc.debug("Reached target " + str(target_vclock))
+                misc.debug("Lowest vclock is " + str(lowest_vclock))
                 break       # Advanced far enough
             # Now run the controller for a bit.
             # Ignore main hook (dummy_trap) for a few iterations?
@@ -516,18 +515,17 @@ class Controller:
             # Reschedule the controllee
             if is_ctrl_dead == False:
                 new_vclock = ctrl.get_status()[0]
-                #print( "New time:", new_vclock )
                 misc.debug( "New time:", new_vclock )
                 heapq.heappush( scheduler_heap, (new_vclock,ctrl) )
 
             if should_continue == False or not target_vclock: # Only want to step once
                 break
         # FIXME: print out new status, if more than one in original ctrl_list?
-        return
+        misc.debug("Return:", lowest_vclock)
+        return lowest_vclock
 
     def advance(self, target_vclock=None):
-        self._advance_controllees(target_vclock)
-        return
+        return self._advance_controllees(target_vclock)
 
     def go(self):
         self.advance("forever")
@@ -535,8 +533,20 @@ class Controller:
 
     def add_probe(self, spec, func=None):
         pr = probe.create(spec, self, func)
-        misc.out( "Global probe %d: %s"%(pr.index, pr) )
+        misc.debug( "Global probe %d: %s"%(pr.index, pr) )
         return
+
+    def get_time(self):
+        start_vclocks = []
+        end_vclocks = []
+        for ctrl in self.replay_controllees_by_index.values():
+            start_vclock = ctrl.get_status()[0]
+            end_vclock = ctrl.get_status()[1]
+            start_vclocks.append(start_vclock)
+            end_vclocks.append(end_vclock)
+        return (sorted(start_vclocks)[0], sorted(end_vclocks)[-1])
+
+
 
 
 @atexit.register
@@ -544,6 +554,3 @@ def cleanup():
     for group in group_set:
         group.kill_all_ctrls()
     return
-
-# vim:ts=4:sw=4:expandtab
-
