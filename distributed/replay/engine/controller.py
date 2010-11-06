@@ -1,13 +1,17 @@
-# vim:ts=4:sw=4:expandtab
-
+# Copyright (C) 2010 Regents of the University of California
+# All rights reserved.
+#
+# Author: Gautam Altekar
 import sys, os, heapq, socket, random, select, dbm, atexit, xmlrpclib
-sys.path.append("../common")
 import controllee, misc, msg_stub, probe, events, struct
 import urlparse_custom, urlparse, dfs, fnmatch, recording
 from misc import *
 import solver
 
 env = os.environ
+
+my_dir=os.path.dirname(sys.argv[0])
+REPLAY_DONE_BIN=my_dir+"/worker.py"
 
 class Task:
     def __init__( self, index, ctrl, pid, tid ):
@@ -194,8 +198,9 @@ class Controller:
                     node = Node("http://%s:8000/"%(hostname))
                     node.ping()
                 except:
+                    #print "Starting " + REPLAY_DONE_BIN
                     if i == 0:
-                        child = misc.start_child( [ssh_bin, hostname, "bdr-worker" ], out_file=file('worker.out', 'a') )
+                        child = misc.start_child( [ssh_bin, hostname, REPLAY_DRONE_BIN ], out_file=file('worker.out', 'a') )
                         time.sleep(1)
                 else:
                     break
@@ -540,3 +545,6 @@ def cleanup():
     for group in group_set:
         group.kill_all_ctrls()
     return
+
+# vim:ts=4:sw=4:expandtab
+

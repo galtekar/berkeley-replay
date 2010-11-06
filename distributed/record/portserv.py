@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# Copyright (C) 2010 Regents of the University of California
+# All rights reserved.
+#
+# Author: Gautam Altekar
 
 import os, sys, socket, select, struct, time, uuid
 sys.path.append("../common")

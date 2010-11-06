@@ -1,7 +1,9 @@
 #!/usr/bin/env python2.6
 #
-# author: Gautam Altekar
-# $Id: replay_console.py,v 1.54 2006/10/04 04:10:31 galtekar Exp $
+# Copyright (C) 2010 Regents of the University of California
+# All rights reserved.
+#
+# Author: Gautam Altekar
 #
 # vim:ts=4:sw=4:expandtab
 

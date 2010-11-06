@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-
-# vim:ts=4:sw=4:expandtab
+# Copyright (C) 2010 Regents of the University of California
+# All rights reserved.
+#
+# Author: Gautam Altekar
 
 # Design choices:
 #
@@ -9,7 +11,7 @@
 
 import sys, os, ConfigParser, time, signal, socket, re
 import getopt, struct, uuid, tempfile, errno
-sys.path.append("../common")
+sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
 import misc, dfs
 
 # Configuration info
@@ -22,9 +24,10 @@ _vkernel_opts = {}
 DEFAULT_DEBUG_LEVEL = 5
 _debug_level = None # None indicates release mode (no debugging)
 
-server_bin = os.path.dirname(sys.argv[0]) + "/bdr-portserv"	
-server_out = os.path.dirname(server_bin)+"/server.out"
-my_name = os.path.basename(sys.argv[0])
+my_name = "bdr-record"
+my_dir = os.path.dirname(sys.argv[0])
+server_bin = my_dir + "/bdr-portserv"	
+server_out = my_dir + "/server.out"
 env = os.environ
 
 
@@ -121,14 +124,15 @@ def write_rec_config(rec_dir, session_id, node_id, vkernel_bin):
 def start_record( args ):
     global _save_dir, _vkernel_opts, _save_dir_prefix
 
-    if "Base.Debug.Level" in _vkernel_opts:
-        vkernel_bin = misc.get_conf("debug_bin")
-    else:
-        vkernel_bin = misc.get_conf("release_bin")
+#    if "Base.Debug.Level" in _vkernel_opts:
+#        vkernel_bin = misc.get_conf("debug_bin")
+#    else:
+#        vkernel_bin = misc.get_conf("release_bin")
+    vkernel_bin = my_dir + "/bdr-kernel"
 
     vkernel_bin = os.path.abspath(os.path.expanduser(vkernel_bin))
     if not os.path.exists(vkernel_bin):
-        misc.die( "Error: cannot find vkernel executable '%s'"%(vkernel_bin) )
+        misc.die( "error: cannot find vkernel executable '%s'"%(vkernel_bin) )
 
     pserv_uuid = start_port_server()
     # Make local session directory
@@ -219,22 +223,36 @@ def start_record( args ):
         assert(0) # Should've detected potential problems earlier
     except os.error, e:
         e_errno, e_str = e
-        misc.log( "Error:", e_str )
+        misc.log( "error:", e_str )
         sys.exit( e_errno )
     return
 
 
+def show_banner():
+    try:
+        dbg_lvl = _vkernel_opts["Base.Debug.Level"]
+    except:
+        dbg_lvl = 0
+        
+    dbg_str = "debug-level=%d"%(dbg_lvl)
+        
+    misc.log( "Berkeley Deterministic Replay (%s)"%(dbg_str) )
+    misc.log( "Copyright 2004-2010 University of California. All rights reserved." )
+
 def usage():
-    print "Usage: %s [options] <prog-and-args>"%(my_name)
+    print "usage: %s [options] <prog-and-args>"%(my_name)
+
 
 def read_args():
     global _save_dir, _save_dir_prefix, _vkernel_opts
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:d:p:rqa", \
+        opts, args = getopt.getopt(sys.argv[1:], "s:d:p:rahv", \
                 ["save-dir=", "debug=", "release", "session-dir-prefix=", \
-                    "quiet", "pause", "disable-de", "disable-tags"])
+                    "verbose", "pause", "disable-de", \
+                    "disable-tags","help"])
     except getopt.GetoptError, ge:
-        misc.die( "Caught:" + str(ge) )
+        misc.log( str(ge) )
+        misc.die( "Use --help for more information." )
 
     for opt, arg in opts:
         #print opt, arg
@@ -245,8 +263,9 @@ def read_args():
         elif opt in ("-r", "--release"):
             if str("Base.Debug.Level") in _vkernel_opts:
                 del _vkernel_opts["Base.Debug.Level"]
-        elif opt in ("-q", "--quiet"):
-            misc.QUIET = True
+        elif opt in ("-v", "--verbose"):
+            misc.QUIET = False
+            #_vkernel_opts["Base.TtyReplayEnabled"] = 1
         elif opt in ("-p", "--session-dir-prefix"):
             save_dir_prefix = arg
         elif opt in ("-a", "--pause"):
@@ -284,15 +303,6 @@ def read_config():
     except ConfigParser.NoOptionError:
         pass
 
-def show_banner():
-    try:
-        dbg_lvl = _vkernel_opts["Base.Debug.Level"]
-        dbg_str = "debug-level=%d"%(dbg_lvl)
-    except:
-        dbg_str = "release"
-        
-    misc.log( "Berkeley Deterministic Replay (%s)"%(dbg_str) )
-    misc.log( "Copyright 2005-2010 University of California. All rights reserved." )
 
 def version_check():
     v = sys.version_info
@@ -307,8 +317,6 @@ if __name__ == "__main__":
     read_config()
     args = read_args()
 
-    show_banner()
-
     if not version_check():
         misc.die( "Python 2.6 or greater required.\n" )
 
@@ -322,11 +330,15 @@ if __name__ == "__main__":
             # PATH env var not set
             pass
         if full_path == None:
-            misc.die( "Error: cannot find", args[0] )
+            misc.die( "error: cannot find executable", args[0] )
         else:
             args[0] = full_path
     ## Check that it's executable
     if not os.path.isfile(args[0]) or not os.access(args[0], os.X_OK):
-        misc.die( "Error:", args[0], "cannot be executed" )
+        misc.die( "error:", args[0], "cannot be executed" )
 
     start_record( args )
+
+
+# vim:ts=4:sw=4:expandtab
+

@@ -1,25 +1,32 @@
    Berkeley Deterministic Replay (BDR) Release 0.1
 
 WHAT IS BDR?
-   BDR is a deterministic replay (also known as record/replay) tool for
-   reproducing executions of parallel (i.e., multi-core) and distributed
-   programs (those that communicate over a network). It is designed
-   for the Linux operating system, and is intended to scale to hundreds
-   of nodes.
+   BDR is a general-purpose deterministic replay tool (also known
+   as record/replay) for reproducing executions of parallel (i.e.,
+   multi-core) and distributed programs (i.e., those that communicate
+   over a network). BDR enables users to analyze replay distributed
+   executions with heavy instrumentation (e.g., distributed taint-flow)
+   that would be too expensive in production environments.
 
    BDR should not be distributed for public use at this time as it is
    currently a research prototype. See the accompanying LICENSE file
    for more details.
 
 HARDWARE REQUIREMENTS:
-   BDR was designed for the x86 architecture, and in particular,
-   the Pentium IV and newer models. The machine must have an MMU and
-   performance counters.
+   BDR was designed for the x86 architecture, and in particular, the
+   Pentium IV (or AMD equivalent) and newer models. The machine must
+   have an MMU and performance counters.
+
+   Processors that support long mode (64-bit mode), PAE (Physical Address
+   Extensions), and PSE (Page Size Extension) features are supported,
+   but they must be disabled for BDR to work. Future support for these
+   features is planned.
 
 SOFTWARE REQUIREMENTS:
-   BDR was designed for Linux 2.6 and is known to work with 2.6.26 and
-   greater.  Only 32-bit Linux is currently supported, but 64-bit Linux
-   may be supported in the future. Any distribution of Linux will do.
+   BDR was designed to run on Linux 2.6 and is known to work with kernel
+   versions 2.6.26 and greater.  Only 32-bit Linux is currently supported,
+   but 64-bit Linux may be supported in the future. Any distribution of
+   Linux (e.g., Debain, Fedora, etc.) will do.
 
    Compiling BDR requires a working GCC (>= 4.2) installation and Python
    2, version >= 6. Python 3 is not currently supported.
@@ -28,10 +35,13 @@ COMPILING BDR:
    - Do a "make clean", then a "make".
 
 INSTALLING BDR:
-   - Do a "make dist". This will create a directory "dist" that
+   - Do a "make install". This will create a directory in build/ that
    will contain all the files you will need to record and replay BDR
-   recordings on a node. This directory may be copied to that remote
-   nodes you would like to include in the recording.
+   recordings on a node. This directory needs to be copied to the remote
+   nodes doing the recording.
+
+   - A "make dist" produces a tarball of the installation directory, to
+   ease distribution.
 
 RUNNING BDR:
    - First, we need to setup your environment.  Add the dist/ directory

@@ -5,6 +5,7 @@ RELEASE_NAME=bdr
 #BUILD=debug
 BUILD=release
 STATS=all
+VERSION=0.1
 
 BUILD_DIR = $(ROOT_DIR)/build/x86-$(BUILD)
 LIBS_DIR = $(ROOT_DIR)/libs
@@ -15,6 +16,9 @@ DIETLIBC_DIR = $(LIBS_DIR)/dietlibc
 VEX_DIR = $(LIBS_DIR)/VEX
 DRE_DIR = distributed/replay/engine
 VKERNEL_BIN = $(BUILD_DIR)/$(RELEASE_NAME)-kernel
+
+DIST_NAME = bdr-$(VERSION)
+INSTALL_DIR = $(ROOT_DIR)/build/$(DIST_NAME)
 
 
 INCLUDES = -I$(ROOT_DIR)/include -I$(LIBS_DIR)/ -I$(DRIVERS_DIR)
@@ -36,7 +40,7 @@ endif
 ifdef MAX_NR_VCPU
 CFLAGS += -DMAX_NR_VCPU=$(MAX_NR_VCPU)
 else
-CFLAGS += -DMAX_NR_VCPU=2
+CFLAGS += -DMAX_NR_VCPU=1
 endif
 
 LIBGCC = $(shell $(CC) -print-libgcc-file-name)

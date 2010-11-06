@@ -14,8 +14,9 @@
 #
 
 import sys, getopt, os
-sys.path.append("../engine")
-import controller
+sys.path.append(os.path.dirname(sys.argv[0])+"/../engine")
+sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
+import controller, misc
 
 opt_quiet = False
 
@@ -38,12 +39,12 @@ def usage():
 
 if __name__ == "__main__":
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "q", ["quiet"])
+        opts, args = getopt.getopt(sys.argv[1:], "v", ["verbose"])
     except getopt.GetoptError, ge:
         misc.die( "Caught:" + str(ge) )
 
     for opt, arg in opts:
-        if opt in ("-q", "--quiet"):
+        if opt in ("-v", "--verbose"):
             opt_quiet = True
 
     if len(args) == 0:
@@ -52,7 +53,7 @@ if __name__ == "__main__":
 
     group = controller.Controller()
     group.add_members(args[0:])
-    tty = TtyOutput(group)
+    #tty = TtyOutput(group)
     group.go()
 
 # vim:ts=4:sw=4:expandtab

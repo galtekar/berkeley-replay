@@ -7,10 +7,11 @@ LOG_OUTPUT = True
 DEBUG = False
 ECHO_DEBUG = False
 VERBOSE_DEBUG = False
-QUIET = False
+QUIET = True
 
 unknowns = "data"
 
+exe_path = os.path.dirname(sys.argv[0])
 my_name = os.path.basename(sys.argv[0])
 app_base_dir = "/tmp/bdr-" + os.environ["USER"]
 _config_parser = None
@@ -133,7 +134,7 @@ def load_preferences( section_name, default_prefs=None ):
             _config_parser.set(section_name,opt,val)
     script_path = os.path.dirname(sys.argv[0])
     read_one = False
-    for cfg in [abspath("~/.bdrrc"),".bdrrc",script_path+"/bdr.cfg","../conf/bdr.cfg" ]:
+    for cfg in [abspath("~/.bdrrc"),".bdrrc",script_path+"/bdr.cfg",exe_path+"/../conf/bdr.cfg" ]:
         read_list = _config_parser.read( [cfg] )
         if len(read_list) > 0:
             read_one = True
