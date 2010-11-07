@@ -1,9 +1,23 @@
+   
+   [ This directory contains the source code for Berkeley Deterministic
+   Replay (BDR) and supporting software components (e.g., libraries
+   and OS kernels). The following license terms apply only to BDR
+   code. Supporting components have their own license terms (see the
+   appropriate subdirectories). ]
+
+   ---------------------------------------------------------------------
+
    Copyright ©2005-2010 The Regents of the University of California
    (Regents). All Rights Reserved. 
-   
-   NO permission to use, copy, modify, and distribute this software and 
-   its documentation is granted, even if distribution is intended
-   for educational, research, and not-for-profit purposes.
+
+   Permission to use, copy, and modify this software (BDR) and its
+   documentation is granted, provided said use, copying, and modification
+   is for research purposes.
+
+   However, permission to distribute this software and its documentation,
+   in modified form or otherwise, is NOT granted, even if said
+   modification and distribution is intended for educational, research,
+   or not-for-profit purposes.
 
    Contact The Office of Technology Licensing, UC Berkeley, 2150
    Shattuck Avenue, Suite 510, Berkeley, CA 94720-1620, (510) 643-7201,

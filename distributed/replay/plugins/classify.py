@@ -1,18 +1,23 @@
 #!/usr/bin/env python2.6
 
-# vim:ts=4:sw=4:expandtab
-
 ######################################################################
-##
+# 
+# Copyright (C) 2010 The Regents of the University of California. 
+# All rights reserved.
+#
+# Author: Gautam Altekar
+#
+# vim:ts=4:sw=4:expandtab
+#
+######################################################################
+
 """
 This plugin obtains info about the control and data planes of a 
 program execution using BDR.
 """
 
-import sys
-sys.path.append("../")
-sys.path.append("./")
-import controller, dtaint, itertools, common
+import sys, os
+import controller, dtaint, itertools, misc
 
 class TokenBucket:
     def __init__(self, rate, size, curr_ts):
@@ -104,19 +109,19 @@ class ChannelProfile:
 
 # Assigns a globally unique id to every open file in the distributed
 # execution.
-class FileGID:
-    def __init__(self, group):
+class FileGID(controller.Plugin):
+    def __init__(self):
         self.gid_map = {}
         self.global_fd_count = 0
-        group.add_probe("io:file,ipc:open:return", self.on_file_open)
-        group.add_probe("io:file,ipc:put:return",\
-                self.on_file_put)
+        probe_list = [\
+            ("io:file,ipc:open:return", self.on_file_open),
+            ("io:file,ipc:put:return", self.on_file_put) ]
+        controller.Plugin.__init__(self, "file-gid", probe_list)
 
     def _make_key(self, task, ev):
         # filename needn't be part of the key for it to be globally
         # unique, but it's still useful for debugging
         return (task.ctrl.node_index, ev.file.object_id, ev.file.name)
-
 
     def on_file_open(self, task, ev):
         # Note that pid rather than node_index won't work, since it 
@@ -140,15 +145,15 @@ class FileGID:
         return (self.gid_map[key], ev.file.name)
 
 
-class Classifier:
-    def __init__(self, group):
+class Classifier(controller.Plugin):
+    def __init__(self, file_gid):
         self.profile_by_id = {}
         self.length_by_id = {}
-        self.file_gid = FileGID(group)
-
-        group.add_probe("io:file,ipc:peek,dequeue:return", 
-                self.on_post_ipc_read)
-        group.add_probe("io:file,ipc:write:return", self.on_post_ipc_write)
+        self.file_gid = file_gid
+        controller.Plugin.__init__(self, "classifier", [\
+           ("io:file,ipc:peek,dequeue:return", 
+                   self.on_post_ipc_read),
+           ("io:file,ipc:write:return", self.on_post_ipc_write)])
         
     def _update_profile(self, id, range):
         """Update the plane profile, were a profile is a list of
@@ -176,21 +181,21 @@ class Classifier:
         return
 
     def on_post_ipc_read(self, task, ev):
-        common.debug("Classifier:", task.index, "recv:", \
+        misc.debug("Classifier:", task.index, "recv:", \
                 (ev.msg.id, ev.msg.len))
         self._on_post_ipc(task, ev)
         return
 
     def on_post_ipc_write(self, task, ev):
-        common.debug("Classifier:", task.index, "sent:", \
+        misc.debug("Classifier:", task.index, "sent:", \
                 (ev.msg.id, ev.msg.len))
         self._on_post_ipc(task, ev)
         return
 
 
 class DataRateClassifier(Classifier):
-    def __init__(self, group):
-        Classifier.__init__(self, group)
+    def __init__(self, file_gid):
+        Classifier.__init__(self, file_gid)
 
         self.last_time = 0
         self.nr_bytes_in_window = 0
@@ -222,10 +227,9 @@ class DataRateClassifier(Classifier):
 
 
 class TokenBucketClassifier(Classifier):
-    def __init__(self, group):
-        Classifier.__init__(self, group)
+    def __init__(self, file_gid):
+        Classifier.__init__(self, file_gid)
         self.bucket_by_id = {}
-        #group.add_probe("syscall::*:return", self.on_syscall)
 
     def _update_bucket(self, tb, len, curr_time):
         tb.fill(curr_time)
@@ -258,22 +262,22 @@ class TokenBucketClassifier(Classifier):
 
 
 class TaintClassifier(Classifier, dtaint.DTaint):
-    def __init__(self, group, origin_files):
+    def __init__(self, origin_files, file_gid):
         # Ordering of base constructor calls is important: we want
         # the classifer callbacks to be made after the taint module
         # has run so that the classifier callbacks have access to
         # updated taint state.
-        dtaint.DTaint.__init__(self, group, origin_files)
-        Classifier.__init__(self, group)
+        dtaint.DTaint.__init__(self, origin_files)
+        Classifier.__init__(self, file_gid)
 
     def _virtual_detect_control_bytes(self, task, ev):
         id = self.file_gid.lookup(task, ev)
         nr_bytes_total = self.length_by_id[id]
 
-        # Careful: taint bit needs not be consecutive in the taint
+        # Careful: taint bit need not be consecutive in the taint
         # string
         range_list = []
-        for (key, group) in itertools.groupby(ev.taint_bytes):
+        for (key, group) in itertools.groupby(ev.msg.get_taint()):
             group_len = sum(1 for _ in group)
             if key == '\0':
                 range_list.append(Range(nr_bytes_total, group_len))
@@ -321,9 +325,6 @@ def compute_stats(base, target):
             false_positives = 0.0
         print "Id:", id, "False positives (%):", false_positives
 
-def on_file_open(task, ev):
-    print "Task:", task, "Event:", ev
-
 if __name__ == "__main__":
     group = controller.Controller()
     #group.dbg_level = 0
@@ -331,7 +332,7 @@ if __name__ == "__main__":
     # XXX: needs to be enabled before adding members; should work
     # before or after
     group.dcgen_enabled = True
-    group.add_members(["file:/tmp/bdr-galtekar/recordings/*"])
+    group.load(["file:/tmp/bdr-galtekar/recordings/*"])
 
     # XXX: must come after members are added for syscall handlers to 
     # be called -- this is an annoying requirement
@@ -340,7 +341,7 @@ if __name__ == "__main__":
     #DataRateClassifier(group)
     detectors = [DataRateClassifier(group), TokenBucketClassifier(group)]
 
-    group.go()
+    group.advance("forever")
 
     #print "Gold standard:", gold_standard.profile_by_id
     #print "Gold standard:", gold_standard.file_gid.gid_map

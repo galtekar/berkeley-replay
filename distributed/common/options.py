@@ -1,3 +1,13 @@
+######################################################################
+# 
+# Copyright (C) 2010 The Regents of the University of California. 
+# All rights reserved.
+#
+# Author: Gautam Altekar
+#
+# vim:ts=4:sw=4:expandtab
+#
+######################################################################
 import sys, getopt
 import misc
 

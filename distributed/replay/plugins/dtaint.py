@@ -1,6 +1,7 @@
 # vim:ts=4:sw=4:expandtab
 
 ######################################################################
+#
 # DTaint : A BDR plugin for tracking taint through a distributed
 # system.
 #
@@ -21,13 +22,16 @@
 #      written to it. This may lead to overtainting, though we haven't 
 #      seen in our limited use of this (e.g., to classify control and
 #      data plane code).
+#
+######################################################################
 
-import fnmatch, syscall, binascii, common
+import sys, os
+import controller, fnmatch, syscall, binascii, misc
 
-common.DEBUG = False
+misc.DEBUG = False
 
-class DTaint:
-    def __init__(self, group, origin_files):
+class DTaint(controller.Plugin):
+    def __init__(self, origin_files):
         self.msg_map = {}
         self.origin_files = origin_files
         self.tainted_files = set()
@@ -42,8 +46,7 @@ class DTaint:
             ("io:file:peek,dequeue:return", self._dtaint_on_post_file_ipc_read),
             ("syscall::open*:return", self._dtaint_on_post_file_open),
         ]
-        for (spec, cb) in probe_list:
-            group.add_probe(spec, cb)
+        controller.Plugin.__init__(self, "dtaint", probe_list)
 
     def _dtaint_on_post_file_open(self, task, ev):
         """Determine if the file being opened is a user-data file or
@@ -74,12 +77,12 @@ class DTaint:
         """Propagate taint into files. We conservatively mark the whole 
         file as tainted."""
         ev.taint_bytes = ev.msg.get_taint()
-        common.debug("Writing to file:", ev.file.name,\
+        misc.debug("Writing to file:", ev.file.name,\
                 binascii.hexlify(ev.taint_bytes[0:16]), "...")
         assert(len(ev.taint_bytes) == ev.msg.len)
         if ev.taint_bytes.count('\0') != len(ev.taint_bytes):
             global_filename = "%d:%s"%(task.ctrl.node_index, ev.file.name)
-            common.debug("Tainting file:", global_filename)
+            misc.debug("Tainting file:", global_filename)
             self.tainted_files.add(global_filename)
             ev.file.set_data_plane()
             if self.TEST_UNTAINTED_CASE:
@@ -87,18 +90,18 @@ class DTaint:
         return
 
     def _dtaint_on_post_file_ipc_read(self, task, ev):
-        common.debug("Reading from file:", ev.file.name)
+        misc.debug("Reading from file:", ev.file.name)
         ev.taint_bytes = ev.msg.get_taint()
         return
 
     def _dtaint_on_post_non_file_ipc_send(self, task, ev):
         """Tag outgoing message with taint meta-data."""
-        common.debug("Task", task.index, "sent:", (ev.msg.id, ev.msg.len))
+        misc.debug("Task", task.index, "sent:", (ev.msg.id, ev.msg.len))
         if ev.msg.id:
             ev.taint_bytes = ev.msg.get_taint()
             #taint_bytes = ''.join([ str(0) ] * __MSG__.len)
             assert( len(ev.taint_bytes) == ev.msg.len )
-            common.debug(\
+            misc.debug(\
                     "%d bytes tainted: "%(ev.taint_bytes.count('\1')),\
                     binascii.hexlify(ev.taint_bytes[0:16]), "...")
             self.msg_map[ev.msg.id] = ev.taint_bytes
@@ -111,7 +114,7 @@ class DTaint:
 
     def _dtaint_on_post_non_file_ipc_recv(self, task, ev):
         """Extract taint meta-data from incoming message."""
-        common.debug("Task", task.index, "received:", (ev.msg.id, ev.msg.len))
+        misc.debug("Task", task.index, "received:", (ev.msg.id, ev.msg.len))
         if ev.msg.id:
             # Messsage should've been sent already; bug otherwise
             assert(ev.msg.id in self.msg_map)

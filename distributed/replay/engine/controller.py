@@ -237,11 +237,11 @@ class Controller:
             if node.ping():
                 node_list.append(node)
             else:
-                misc.error( 'Problem initializing replay node', hostname )
+                misc.error( 'Problem initializing replay drone', hostname )
             count += 1
             #pbar.update(count)
         #pbar.finish()
-        misc.log( 'All %d node(s) initialized.'%(len(node_names)) )
+        misc.log( 'All %d drone(s) initialized.'%(len(node_names)) )
 
 #    def add_probe(self, spec, func=None):
 #        pr = probe.create(spec, self, func)

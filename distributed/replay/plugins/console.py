@@ -8,7 +8,7 @@
 #
 # vim:ts=4:sw=4:expandtab
 
-"""Library for controlling replay."""
+"""Plugin for controlling replay."""
 
 import os, sys, fcntl, select, readline, re, ConfigParser, random, socket
 import code, traceback, subprocess, pprint, pdb, time, signal, getopt

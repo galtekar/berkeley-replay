@@ -4,9 +4,9 @@ WHAT IS BDR?
    BDR is a general-purpose deterministic replay tool (also known
    as record/replay) for reproducing executions of parallel (i.e.,
    multi-core) and distributed programs (i.e., those that communicate
-   over a network). BDR enables users to analyze replay distributed
-   executions with heavy instrumentation (e.g., distributed taint-flow)
-   that would be too expensive in production environments.
+   over a network). BDR enables users to shift the instrumentation over of
+   execution analysis to the offline, replay phase. This makes it possible
+   to be analysis that would be too expensive in production environments.
 
    BDR should not be distributed for public use at this time as it is
    currently a research prototype. See the accompanying LICENSE file
