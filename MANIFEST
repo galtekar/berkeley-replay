@@ -1,1 +1,11 @@
    Berkeley Deterministic Replay (BDR) Package Manifest
+
+bench/         Apps used for benchmarking/experimental results
+distributed/   Distributed record and replay engine code
+drivers/       OS drivers for efficient record/replay
+include/       Headers for talking to BDR from within guest apps
+libs/          Librarires used by the vkernel
+os/            Operating system support for the vkernel
+scripts/       Scripts to aid distributed operation
+tests/         Unit tests for the vkernel
+vkernel/       The local heart of the record/replay system

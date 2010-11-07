@@ -345,7 +345,7 @@ if __name__ == "__main__":
     args = opt_parser.parse()
 
     if len(args) == 0:
-        print "%s: missing executable"%(my_name)
+        print "%s: missing executable name"%(my_name)
         print "Try `%s --help' for more information."%(my_name)
         sys.exit(-1)
 
