@@ -26,7 +26,7 @@ CFLAGS += -g -Wall -Werror -Wundef -Wno-trigraphs -Wshadow -fno-common -fno-stri
 
 
 ifeq ($(BUILD), release)
-CFLAGS += -O3 -DDEBUG=0 -DPRODUCT=0
+CFLAGS += -O2 -DDEBUG=0 -DPRODUCT=0
 else
 CFLAGS += -O0 -DDEBUG=1 -DPRODUCT=0
 endif

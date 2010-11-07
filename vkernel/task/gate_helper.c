@@ -285,7 +285,7 @@ GateRecordReplayVclock()
          uint64_t last_clock = curr_vcpu->last_clock, 
                   new_clock = get_sys_micros();
 #if PRODUCT
-#error "XXX: what if system time gets reset in between?
+#error "XXX: what if system time gets reset in between?"
 #else
          int64_t time_elapsed_since_last_event = (new_clock - last_clock);
 #endif
