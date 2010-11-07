@@ -30,7 +30,7 @@ misc.QUIET = False
 misc.DEBUG = False
 opt_tty_output_by = "group"
 opt_tty_output_file = None
-opt_classify_plane = True
+opt_classify_plane = False
 
 my_name = os.path.basename(sys.argv[0])
 
