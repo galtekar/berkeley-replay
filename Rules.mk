@@ -18,7 +18,7 @@ DRE_DIR = distributed/replay/engine
 VKERNEL_BIN = $(BUILD_DIR)/$(RELEASE_NAME)-kernel
 
 DIST_NAME = bdr-$(VERSION)
-INSTALL_DIR = $(ROOT_DIR)/build/$(DIST_NAME)
+INSTALL_DIR = $(BUILD_DIR)/$(DIST_NAME)
 
 
 INCLUDES = -I$(ROOT_DIR)/include -I$(LIBS_DIR)/ -I$(DRIVERS_DIR)

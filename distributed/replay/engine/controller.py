@@ -146,8 +146,21 @@ class Node(xmlrpclib.ServerProxy):
         self.url = urlparse.urlparse(url_str)
         return
 
+class Plugin:
+    def __init__(self, name, probe_spec_list):
+        self.name = name
+        self.probe_spec_list = probe_spec_list
+
+
 class ControllerException(Exception):
     pass
+
+
+def cleanup():
+    misc.log("Cleaning up and exiting.")
+    for group in group_set:
+        group.kill_all_ctrls()
+    return
 
 class Controller:
     """The heart of the distributed replay engine. It manages all of
@@ -186,6 +199,7 @@ class Controller:
                 pr = probe.create(self, spec, func)
                 self.probe_list.append(pr)
 
+        atexit.register(cleanup)
 
     def _read_config(self):
         SECTION_NAME = "replay"
@@ -579,13 +593,3 @@ class Controller:
             start_vclocks.append(start_vclock)
             end_vclocks.append(end_vclock)
         return (sorted(start_vclocks)[0], sorted(end_vclocks)[-1])
-
-
-
-
-@atexit.register
-def cleanup():
-    misc.log("Cleaning up and exiting.")
-    for group in group_set:
-        group.kill_all_ctrls()
-    return

@@ -1,18 +1,33 @@
 #!/usr/bin/env python
+#
 # Copyright (C) 2010 Regents of the University of California
 # All rights reserved.
 #
 # Author: Gautam Altekar
+#
+# vim:ts=4:sw=4:expandtab
+######################################################################
 
+######################################################################
+# 
+# Summary:
+#   Runs an executable under the vkernel (which in turns records
+#   program's execution. Also ensures that necessary daemons (portserver, 
+#   log collectors) are running.
+#
 # Design choices:
 #
-# o We chose to exec the vkerne rather than fork-and-exec. Invoking
-# scripts assume pid of app is same as os.getpid().
+#   o We chose to exec the vkernel rather than fork-and-exec, because
+#   some invoking scripts assume pid of app is same as os.getpid(). A
+#   for-and-exec model would violate that assumption.
+#
+######################################################################
 
 import sys, os, ConfigParser, time, signal, socket, re
 import getopt, struct, uuid, tempfile, errno
 sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
 import misc, dfs
+from options import *
 
 # Configuration info
 _section_name = "record"
@@ -239,45 +254,53 @@ def show_banner():
     misc.log( "Berkeley Deterministic Replay (%s)"%(dbg_str) )
     misc.log( "Copyright 2004-2010 University of California. All rights reserved." )
 
-def usage():
-    print "usage: %s [options] <prog-and-args>"%(my_name)
+class MyOptions(Options):
+    def __init__(self):
+        my_options = {
+            "save-as" : ("URI", "saves recording to URI (default: local)",
+                self.__save_as),
+            "debug" : ("LEVEL", "sets debug logging level to LEVEL",
+                self.__debug),
+            "name-prefix" : ("STRING", "sets prefix of recording's name",
+                self.__name_prefix),
+            "verbose" : (None, "enables console status messages",
+                self.__verbose),
+            "halt-on-abort" : (None, "awaits debugger if vkernel crashes",
+                self.__halt_on_abort),
+            "disable-de" : (None, "disables direct execution",
+                self.__disable_de),
+            "disable-tags" : (None, "disables tagged messages",
+                self.__disable_tags),
+        }
+        Options.__init__(self, my_options)
+        return
 
+    def usage(self):
+        print "Usage: %s [options] <executable> [args] ..."%(my_name)
+        print "Summary: Records program execution for deterministic replay."
+        Options.usage(self)
+    
+    def __save_as(self, arg):
+        assert(0)
 
-def read_args():
-    global _save_dir, _save_dir_prefix, _vkernel_opts
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:d:p:rahv", \
-                ["save-dir=", "debug=", "release", "session-dir-prefix=", \
-                    "verbose", "pause", "disable-de", \
-                    "disable-tags","help"])
-    except getopt.GetoptError, ge:
-        misc.log( str(ge) )
-        misc.die( "Use --help for more information." )
+    def __debug(self, arg):
+        _vkernel_opts["Base.Debug.Level"] = int(arg)
 
-    for opt, arg in opts:
-        #print opt, arg
-        if opt in ("-s", "--save-dir"):
-            save_dir = arg
-        elif opt in ("-d", "--debug"):
-            _vkernel_opts["Base.Debug.Level"] = int(arg)
-        elif opt in ("-r", "--release"):
-            if str("Base.Debug.Level") in _vkernel_opts:
-                del _vkernel_opts["Base.Debug.Level"]
-        elif opt in ("-v", "--verbose"):
-            misc.QUIET = False
-            #_vkernel_opts["Base.TtyReplayEnabled"] = 1
-        elif opt in ("-p", "--session-dir-prefix"):
-            save_dir_prefix = arg
-        elif opt in ("-a", "--pause"):
-            _vkernel_opts["Base.Debug.PauseOnAbort"] = 1
-        elif opt in ("--disable-de"):
-            _vkernel_opts["Base.DirectExecutionEnabled"] = 0
-        elif opt in ("--disable-tags"):
-            _vkernel_opts["Base.IpcTagsEnabled"] = 0
-        else:
-            usage()
-            sys.exit(-1)
-    return args
+    def __name_prefix(self, arg):
+        assert(0)
+        save_dir_prefix = arg
+
+    def __verbose(self, arg):
+        misc.QUIET = False
+
+    def __halt_on_abort(self):
+        _vkernel_opts["Base.Debug.PauseOnAbort"] = 1
+
+    def __disable_de(self):
+        _vkernel_opts["Base.DirectExecutionEnabled"] = 0
+
+    def __disable_tags(self):
+        _vkernel_opts["Base.IpcTagsEnabled"] = 0
 
 def read_config():
     global _vkernel_opts
@@ -312,17 +335,20 @@ def version_check():
 
 ##### Main work.
 if __name__ == "__main__":
+    # Basic compatibility checks
+    if not version_check():
+        misc.die( "Python >= 2.6 and < 3.0 required.\n" )
 
     # Configuration options take precendence
     read_config()
-    args = read_args()
-
-    if not version_check():
-        misc.die( "Python 2.6 or greater required.\n" )
+    opt_parser = MyOptions()
+    args = opt_parser.parse()
 
     if len(args) == 0:
-        usage()
+        print "%s: missing executable"%(my_name)
+        print "Try `%s --help' for more information."%(my_name)
         sys.exit(-1)
+
     if not os.path.exists(args[0]):
         try:
             full_path = misc.find_file(args[0], env["PATH"])
@@ -338,7 +364,3 @@ if __name__ == "__main__":
         misc.die( "error:", args[0], "cannot be executed" )
 
     start_record( args )
-
-
-# vim:ts=4:sw=4:expandtab
-

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #
 # Copyright (C) 2010 The Regents of the University of California. 
-# 
 # All rights reserved.
 #
 # Author: Gautam Altekar
@@ -13,9 +12,9 @@
 #
 # Summary:
 #
-#   A simple program that replays a previously recorded execution. It
-#   uses plugin architecture to echo tty output to the currrent tty
-#   or user-specified file(s).
+#   Simply replays a recording, using the plugin architecture to echo 
+#   tty output to the currrent tty or user-specified file(s). Useful
+#   for testing and demos.
 #
 ######################################################################
 
@@ -24,18 +23,23 @@ sys.path.append(os.path.dirname(sys.argv[0])+"/../engine")
 sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
 import controller, misc
 from progressbar import *
+from options import *
 
-class Plugin:
-    def __init__(self, name, probe_spec_list):
-        self.name = name
-        self.probe_spec_list = probe_spec_list
+############################
+## Options
+misc.QUIET = False
+misc.DEBUG = False
+opt_tty_output_by = "group"
+opt_tty_output_file = None
 
-class TtyOutput(Plugin):
+my_name = os.path.basename(sys.argv[0])
+
+class TtyOutput(controller.Plugin):
     def __init__(self, output_by_str, output_file):
         self.output_by_str = output_by_str
         self.output_file = output_file
         self.file_by_id = {}
-        Plugin.__init__(self, "tty-output", [\
+        controller.Plugin.__init__(self, "tty-output", [\
             ("io:device:write:return", self._on_tty_write),
             ("sys:task:start:return", self._on_task_start) ])
 
@@ -61,42 +65,42 @@ class TtyOutput(Plugin):
         for s in task.get_iov_bytes(ev.msg.iov_list):
             self._do_output(task, s)
 
-        
-def usage():
-    my_name = os.path.basename(sys.argv[0])
-    print "usage: %s [options] <recording> ..."%(my_name)
-   
+class MyOptions(Options):
+    def __init__(self):
+        Options.__init__(self, {
+            "quiet" : (None, "suppress all status messages", self.__quiet),
+            "tty-file" : ( "FILE", "send tty output to FILE",
+                self.__tty_file),
+            "tty-group" : ( "GROUP", "group tty output by GROUP=[group|node|task]", self.__tty_group),
+        })
+        return
 
-misc.QUIET = False
-misc.DEBUG = False
-opt_tty_output_by = "group"
-opt_tty_output_file = None
+    def __quiet(self):
+        misc.QUIET = True
 
-if __name__ == "__main__":
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "qho:",\
-                ["quiet", "help", "tty-output-file=", "tty-output-by="])
-    except getopt.GetoptError, ge:
-        misc.die( str(ge) )
+    def __tty_file(self, arg):
+        global opt_tty_output_file
+        opt_tty_output_file = arg
 
-    for opt, arg in opts:
-        if opt in ("-q", "--quiet"):
-            misc.QUIET = True
-        elif opt in ("-o", "--tty-output-file"):
-            opt_tty_output_file = arg
-        elif opt in ("--tty-output-by"):
-            modes = ("group", "node", "task")
-            if arg not in modes:
-                misc.die("supported grouping modes are:", modes)
-            opt_tty_output_by = arg
-        elif opt in ("-h", "--help"):
-            usage()
-            sys.exit(-1)
+    def __tty_group(self, arg):
+        global opt_tty_output_by
+        modes = ("group", "node", "task")
+        if arg not in modes:
+            misc.die("supported grouping modes are:", modes)
+        opt_tty_output_by = arg
 
-    if len(args) == 0:
-        usage()
-        sys.exit(-1)
+    def usage(self):
+        print "Usage: %s [options] <URI> ..."%(my_name)
+        print "Summary: Replays recording(s) identified by URI arg(s)."
 
+        print "\nSupported URIs:"
+        print "   file     e.g., file:/tmp/bdr-user/recordings/*"
+        print "   hdfs     e.g., hdfs:/hadoop/cluster5/hdfs-run"
+        print "   Wildcards are permitted."
+        Options.usage(self)
+        return
+
+def do_replay():
     plugins = []
     if opt_tty_output_file:
         plugins.append(TtyOutput(opt_tty_output_by, opt_tty_output_file))
@@ -105,7 +109,6 @@ if __name__ == "__main__":
 
     misc.log("All systems go: %d node(s), %d task(s), %d probe(s)."%(len(group.nodes_by_uuid), len(group.task_by_tid), len(group.probe_list)))
 
-    start_time = time.time()
     (virt_start_time, virt_end_time) = group.get_time()
     total_length = virt_end_time - virt_start_time
     #print virt_start_time, virt_end_time, total_length
@@ -120,6 +123,19 @@ if __name__ == "__main__":
             pbar.update(new_vclock - virt_start_time)
     if misc.QUIET == False:
         pbar.finish()
+    return total_length
+
+if __name__ == "__main__":
+    opt_parser = MyOptions()
+    args = opt_parser.parse()
+
+    if len(args) == 0:
+        print "%s: missing recording URI"%(my_name)
+        print "Try `%s --help' for more information."%(my_name)
+        sys.exit(-1)
+
+    start_time = time.time()
+    total_length = do_replay()
     finish_time = time.time()
 
     misc.log("Replayed %f virtual second(s) in %f second(s)."%(total_length / 1000000.0, finish_time - start_time))

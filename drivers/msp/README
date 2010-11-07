@@ -14,7 +14,7 @@ Summary:
 Credits:
    The implementation closely follows the shadow pagetable model described
    by Dunlap et al. in the SMP-ReVirt system (see Virtual Execution
-   Environments (VEE) '08). The key difference is the SMP-ReVirt was
+   Environments (VEE) '08). The key difference is that SMP-ReVirt was
    implemented at the VMM level and was intended for whole-system memory
    sharing, while the Linux MSP driver is designed for user-level and
    task-specific memory sharing.
