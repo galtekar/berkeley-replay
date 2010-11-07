@@ -7,8 +7,6 @@
 #include "vkernel/public.h"
 #include "private.h"
 
-#include </usr/local/include/valgrind/valgrind.h>
-
 static VexArchInfo          vai;
 static VexArch              va;
 static VexAbiInfo           vex_abiinfo;
