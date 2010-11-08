@@ -48,8 +48,8 @@ class TtyOutput(controller.Plugin):
             self._do_output(task, s)
 
 class TtyFileOutput(controller.Plugin):
-    def __init__(self, filename):
-        self.ofile = open(filename, "w+")
+    def __init__(self, file):
+        self.ofile = file
         controller.Plugin.__init__(self, "tty-file-output",\
                 [("io:device:write:return", self._on_tty_write)])
         return

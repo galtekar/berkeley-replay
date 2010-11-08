@@ -132,18 +132,21 @@ class FileGID(controller.Plugin):
         if key not in self.gid_map:
             self.gid_map[key] = self.global_fd_count
             self.global_fd_count += 1
-        print "Open:", ev.file.name, "Key:", key, "Gid:", self.gid_map[key]
+        log("Open:", ev.file.name, "Key:", key, "Gid:", self.gid_map[key])
         return
 
     def on_file_put(self, task, ev):
         key = self._make_key(task, ev)
-        print "Close:", key
-        del self.gid_map[key]
+        log("Close:", key)
+        if key in self.gid_map:
+            del self.gid_map[key]
+        else:
+            log("WARNING: %s was never in gid_map!\n", key)
         return
 
     def lookup(self, task, ev):
         key = self._make_key(task, ev)
-        print "Lookup:", ev.file.name
+        log("Lookup:", ev.file.name)
         return (self.gid_map[key], ev.file.name)
 
 
@@ -173,9 +176,9 @@ class Classifier(controller.Plugin):
         file_id = self.file_gid.lookup(task, ev)
         if file_id not in self.length_by_id:
             self.length_by_id[file_id] = 0
-        print self, ": considering", file_id
+        log(self, ": considering", file_id)
         if file_id not in self.profile_by_id:
-            print self, ": inserting", file_id
+            log(self, ": inserting", file_id)
             self.profile_by_id[file_id] = ChannelProfile()
         for range in self._virtual_detect_control_bytes(task, ev):
             self._update_profile(file_id, range)
@@ -290,12 +293,13 @@ class TaintClassifier(Classifier, dtaint.DTaint):
 ######################################################################
 # Main Script
 #
-origin_files = set(["/home/galtekar/tst", "/scratch/galtekar/src/logreplay/bench/jobs/data_files/*", "/home/galtekar/src/logreplay/bench/jobs/data_files/*","/scratch/galtekar/src/logreplay/bench/jobs/hypertable/issue-63/*.tsv"])
+#origin_files = set(["/home/galtekar/tst", "/scratch/galtekar/src/logreplay/bench/jobs/data_files/*", "/home/galtekar/src/logreplay/bench/jobs/data_files/*","/scratch/galtekar/src/logreplay/bench/jobs/hypertable/issue-63/*.tsv"])
+origin_files = set()
 
 def compute_stats(base, target):
-    print "*"*70
-    print target
-    print "*"*70
+    log("*"*70)
+    log(target)
+    log("*"*70)
 
     stat_map = {}
     for (id, base_profile) in base.profile_by_id.items():
@@ -310,7 +314,7 @@ def compute_stats(base, target):
                 float(total_control_bytes) * 100.0)
         else:
             false_negatives = 0.0
-        print "Id:", id, "False negatives (%):", false_negatives
+        log("Id:", id, "False negatives (%):", false_negatives)
         #stat_map[id].false_negatives = false_negatives
 
     for (id, target_profile) in target.profile_by_id.items():
@@ -325,7 +329,7 @@ def compute_stats(base, target):
                 float(total_control_bytes) * 100.0
         else:
             false_positives = 0.0
-        print "Id:", id, "False positives (%):", false_positives
+        log("Id:", id, "False positives (%):", false_positives)
 
 class ClassifyTool(Tool):
     def __init__(self):
@@ -339,20 +343,25 @@ class ClassifyTool(Tool):
         origin_files.add(arg)
         return
 
-    def setup(self, group):
+    def setup(self, log_file):
+        self.log_file = log_file
         plugins = []
 
-        file_gid = classify.FileGID()
-        self.gold_standard = classify.TaintClassifier(origin_files, file_gid)
-        self.detectors = [classify.DataRateClassifier(file_gid), classify.TokenBucketClassifier(file_gid)]
-        detectors.append(gold_standard)
-        plugins.extend(detectors)
-        plugins.append(file_gid)
+        file_gid = FileGID()
+        self.gold_standard = TaintClassifier(origin_files, file_gid)
+        self.detectors = [DataRateClassifier(file_gid), TokenBucketClassifier(file_gid)]
 
-        group.add_plugin(plugins)
 
-        # XXX: this is a hack; ideally, dcgen should be enabled by dtaint
-        group.dcgen_enabled = True
+        # XXX: this is a hack; eventually, we won't need to enable 
+        # explicitly since dcgen will be on all the time (if there is no 
+        # taint, then there will be no need for instrumentation)
+        #group.dcgen_enabled = True
+        return self.detectors + [file_gid, self.gold_standard]
+
+    def log(self, *args, **kwargs):
+        if self.log_file:
+            string = "[%s]: "%(self.name) + ' '.join( map( str, args ))
+            self.log_file.write(string + "\n")
 
     def finish(self):
         for detector in self.detectors:
@@ -360,7 +369,9 @@ class ClassifyTool(Tool):
             #print detector, ":", detector.profile_by_id
             #print detector, ":", detector.file_gid.gid_map
 
-register(ClassifyTool())
+my_tool = ClassifyTool()
+register(my_tool)
+log = my_tool.log
 
 #if __name__ == "__main__":
 #    group = controller.Controller()

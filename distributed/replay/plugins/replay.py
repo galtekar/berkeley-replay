@@ -31,7 +31,8 @@ import classify
 misc.QUIET = False
 misc.DEBUG = False
 opt_tty_output_by = "group"
-opt_tty_output_file = None
+tty_file = None
+tool_file = None
 chosen_tool = None
 
 my_name = os.path.basename(sys.argv[0])
@@ -39,9 +40,18 @@ my_name = os.path.basename(sys.argv[0])
 class MyOptions(HelpOptions):
     def __init__(self, tools):
         opts = {
-            "tool" : ListOption("NAME", tools.keys(), "null", "use tool named NAME", self.__set_tool),
-            "quiet" : ArglessOption("suppress all status messages", self.__quiet),
-            "tty-file" : ArgOption("FILE", "send tty output to FILE", self.__tty_file),
+            "tool" : ListOption("NAME", tools.keys(), "null", "use tool named NAME", 
+                self.__set_tool),
+            "quiet" : ArglessOption("suppress all status messages", 
+                self.__quiet),
+            "tty-file" : ArgOption("FILE", "send tty output to FILE", 
+                self.__tty_file),
+            "tty-fd" : ArgOption("FD", "send tty output to file descriptor FD",
+                self.__tty_fd),
+            "tool-file" : ArgOption("FILE", "send tool output to FILE", 
+                self.__tool_file),
+            "tool-fd" : ArgOption("FD", "send tool output to file descriptor FD", 
+                self.__tool_fd),
             #"tty-group" : ListOption("GROUP", ["group", "node", "task"], "group", "group tty output by GROUP", self.__tty_group)
         }
         basesec = OptionSection("base", "Options available to all tools", opts)
@@ -57,8 +67,26 @@ class MyOptions(HelpOptions):
         misc.QUIET = True
 
     def __tty_file(self, arg):
-        global opt_tty_output_file
-        opt_tty_output_file = arg
+        global tty_file
+        tty_file = open(arg, "w+")
+
+    def __tty_fd(self, arg):
+        global tty_file
+        if arg == "1":
+            tty_file = sys.stdout
+        elif arg == "2":
+            tty_file = sys.stderr
+
+    def __tool_file(self, arg):
+        global tool_file
+        tool_file = open(arg, "w+")
+
+    def __tool_fd(self, arg):
+        global tool_file
+        if arg == "1":
+            tool_file = sys.stdout
+        elif arg == "2":
+            tool_file = sys.stderr
 
     def __tty_group(self, arg):
         global opt_tty_output_by
@@ -81,7 +109,7 @@ class MyOptions(HelpOptions):
 
         print "\nSupported URIs:"
         print "   file     e.g., file:/tmp/bdr-user/recordings/*"
-        print "   hdfs     e.g., hdfs:/hadoop/cluster5/hdfs-run"
+        #print "   hdfs     e.g., hdfs:/hadoop/cluster5/hdfs-run"
         print "   Wildcards are permitted."
 
         print "\nSupported tools:"
@@ -94,8 +122,8 @@ class NullTool(Tool):
     def __init__(self):
         Tool.__init__(self, "null", None, "does no analysis")
 
-    def setup(self, group):
-        return
+    def setup(self):
+        return []
 
     def finish(self):
         return
@@ -121,11 +149,11 @@ def do_replay_work(group):
 
 def do_replay():
     plugins = []
-    if opt_tty_output_file:
-        plugins.append(tty.TtyFileOutput(opt_tty_output_file))
+    if tty_file:
+        plugins.append(tty.TtyFileOutput(tty_file))
 
-    group = controller.Controller(plugins=plugins)
-    chosen_tool.setup(group)
+    tool_plugins = chosen_tool.setup(tool_file)
+    group = controller.Controller(plugins=plugins+tool_plugins)
     group.load(args)
     total_length = do_replay_work(group)
     chosen_tool.finish()

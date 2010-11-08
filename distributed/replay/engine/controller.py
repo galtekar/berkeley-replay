@@ -185,7 +185,7 @@ class Controller:
         self.start_vclock = start_vclock
         self.jit_enabled = jit_enabled
         self.verify_enabled = verify_enabled
-        self.dcgen_enabled = False
+        self.dcgen_enabled = True
 
         self.node_list = []
         self._start_workers(self.node_list)

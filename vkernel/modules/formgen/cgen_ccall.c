@@ -1596,6 +1596,8 @@ static const struct InstrCall handledCCallA[] = {
    { .name = "x86g_create_fpucw", .fn = cgInstrCreateFPUCW },
    { .name = "x86g_check_fldcw", .fn = cgInstrCheckFLDCW },
    { .name = "x86g_calculate_FXAM", .fn = cgInstrCalcFXAM },
+   /* XXX: temporary hack until we have a more precise modeling. */
+   { .name = "x86g_create_mxcsr", .fn = cgInstrCreateFPUCW },
    { .name = "", .fn = NULL }
 };
 
