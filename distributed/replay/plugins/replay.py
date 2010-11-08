@@ -122,7 +122,7 @@ class NullTool(Tool):
     def __init__(self):
         Tool.__init__(self, "null", None, "does no analysis")
 
-    def setup(self):
+    def setup(self, log_file):
         return []
 
     def finish(self):

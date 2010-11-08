@@ -44,4 +44,4 @@ DevTty_Init()
    return 0;
 }
 
-DEVICE_INITCALL(DevTty_Init);
+CORE_INITCALL(DevTty_Init);
