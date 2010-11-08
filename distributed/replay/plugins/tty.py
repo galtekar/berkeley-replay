@@ -46,3 +46,14 @@ class TtyOutput(controller.Plugin):
     def _on_tty_write(self, task, ev):
         for s in task.get_iov_bytes(ev.msg.iov_list):
             self._do_output(task, s)
+
+class TtyFileOutput(controller.Plugin):
+    def __init__(self, filename):
+        self.ofile = open(filename, "w+")
+        controller.Plugin.__init__(self, "tty-file-output",\
+                [("io:device:write:return", self._on_tty_write)])
+        return
+
+    def _on_tty_write(self, task, ev):
+        for s in task.get_iov_bytes(ev.msg.iov_list):
+            self.ofile.write(s)

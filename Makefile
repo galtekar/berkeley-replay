@@ -17,7 +17,7 @@ base:
 	@echo "##### Success. Build complete."
 
 
-dist: install distclean
+dist: distclean
 	@echo "##### Preparing a disribution tarball."
 	@tar -cf $(DIST_NAME).tar $(INSTALL_DIR)
 	@gzip -f $(DIST_NAME).tar

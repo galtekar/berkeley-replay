@@ -1,5 +1,4 @@
 KVER = $(shell uname -r)
-#KHEADER_PATH = ../linux/headers/$(KVER)
 
 RELEASE_NAME=bdr
 #BUILD=debug
@@ -14,11 +13,10 @@ PERFCTR_DIR = $(DRIVERS_DIR)/perfctr
 MSP_DIR = $(DRIVERS_DIR)/msp
 DIETLIBC_DIR = $(LIBS_DIR)/dietlibc
 VEX_DIR = $(LIBS_DIR)/VEX
-DRE_DIR = distributed/replay/engine
+DRE_DIR = $(ROOT_DIR)/distributed/replay/engine
 VKERNEL_BIN = $(ROOT_DIR)/distributed/bin/$(RELEASE_NAME)-kernel
-
-DIST_NAME = bdr-$(VERSION)
-INSTALL_DIR = $(BUILD_DIR)/$(DIST_NAME)
+INSTALL_DIR = $(ROOT_DIR)/distributed
+DIST_NAME = $(RELEASE_NAME)-$(VERSION)
 
 
 INCLUDES = -I$(ROOT_DIR)/include -I$(LIBS_DIR)/ -I$(DRIVERS_DIR)

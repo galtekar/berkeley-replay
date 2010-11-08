@@ -264,7 +264,7 @@ class MyOptions(HelpOptions):
                 self.__debug),
             "name-prefix" : ArgOption("STRING", "sets prefix of recording's name",
                 self.__name_prefix),
-            "quiet" : ArglessOption("disabled console status messages",
+            "quiet" : ArglessOption("disables console status messages",
                 self.__quiet),
             "halt-on-abort" : ArglessOption("awaits debugger if vkernel crashes",
                 self.__halt_on_abort),

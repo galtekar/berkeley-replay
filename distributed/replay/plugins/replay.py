@@ -42,7 +42,7 @@ class MyOptions(HelpOptions):
             "tool" : ListOption("NAME", tools.keys(), "null", "use tool named NAME", self.__set_tool),
             "quiet" : ArglessOption("suppress all status messages", self.__quiet),
             "tty-file" : ArgOption("FILE", "send tty output to FILE", self.__tty_file),
-            "tty-group" : ListOption("GROUP", ["group", "node", "task"], "group", "group tty output by GROUP", self.__tty_group)
+            #"tty-group" : ListOption("GROUP", ["group", "node", "task"], "group", "group tty output by GROUP", self.__tty_group)
         }
         basesec = OptionSection("base", "Options available to all tools", opts)
         optsecs = {}
@@ -122,7 +122,7 @@ def do_replay_work(group):
 def do_replay():
     plugins = []
     if opt_tty_output_file:
-        plugins.append(tty.TtyOutput(opt_tty_output_by, opt_tty_output_file))
+        plugins.append(tty.TtyFileOutput(opt_tty_output_file))
 
     group = controller.Controller(plugins=plugins)
     chosen_tool.setup(group)

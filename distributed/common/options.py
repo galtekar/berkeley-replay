@@ -71,20 +71,20 @@ class Options:
         except getopt.GetoptError, ge:
             misc.die( str(ge) )
 
-        optset = set()
+        optmap = {}
         for (l, s) in opts:
-            optset.add(l)
+            optmap[l] = s
 
         for (k, v) in self.flat_opts.items():
             #print (k, v, v.argname)
             opt_k = "--%s"%k
             if v.argname:
-                if opt_k in optset:
-                    v.func(opts[opt_k])
+                if opt_k in optmap:
+                    v.func(optmap[opt_k])
                 elif v.defarg:
                     v.func(v.defarg)
             else:
-                if opt_k in optset:
+                if opt_k in optmap:
                     v.func()
 #        for optname, arg in opts:
 #            if optname.startswith("--") and optname[2:] in self.flat_opts:
