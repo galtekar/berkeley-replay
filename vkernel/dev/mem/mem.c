@@ -55,4 +55,4 @@ DevMem_Init()
    return 0;
 }
 
-DEVICE_INITCALL(DevMem_Init);
+CORE_INITCALL(DevMem_Init);
