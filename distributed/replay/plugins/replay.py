@@ -17,12 +17,14 @@
 ######################################################################
 
 import sys, getopt, os, time
-sys.path.append(os.path.dirname(sys.argv[0])+"/../engine")
+sys.path.append(os.path.dirname(sys.argv[0])+"/../replay/engine")
 sys.path.append(os.path.dirname(sys.argv[0])+"/../common")
 import controller, misc
 from progressbar import *
 from options import *
-import tty, classify
+from tool import *
+import tty
+import classify
 
 ############################
 ## Options
@@ -30,18 +32,25 @@ misc.QUIET = False
 misc.DEBUG = False
 opt_tty_output_by = "group"
 opt_tty_output_file = None
-opt_classify_plane = False
+chosen_tool = None
 
 my_name = os.path.basename(sys.argv[0])
 
-class MyOptions(Options):
-    def __init__(self):
-        Options.__init__(self, {
-            "quiet" : (None, "suppress all status messages", self.__quiet),
-            "tty-file" : ( "FILE", "send tty output to FILE",
-                self.__tty_file),
-            "tty-group" : ( "GROUP", "group tty output by GROUP=[group|node|task]", self.__tty_group),
-        })
+class MyOptions(HelpOptions):
+    def __init__(self, tools):
+        opts = {
+            "tool" : ListOption("NAME", tools.keys(), "null", "use tool named NAME", self.__set_tool),
+            "quiet" : ArglessOption("suppress all status messages", self.__quiet),
+            "tty-file" : ArgOption("FILE", "send tty output to FILE", self.__tty_file),
+            "tty-group" : ListOption("GROUP", ["group", "node", "task"], "group", "group tty output by GROUP", self.__tty_group)
+        }
+        basesec = OptionSection("base", "Options available to all tools", opts)
+        optsecs = {}
+        for tool in tools.values():
+            if tool.optsec:
+                optsecs[tool.name] = tool.optsec
+
+        HelpOptions.__init__(self, basesec, optsecs)
         return
 
     def __quiet(self):
@@ -58,6 +67,14 @@ class MyOptions(Options):
             misc.die("supported grouping modes are:", modes)
         opt_tty_output_by = arg
 
+    def __set_tool(self, arg):
+        if arg in tools:
+            global chosen_tool
+            chosen_tool = tools[arg]
+        else:
+            misc.die("supported tools are:", tools.keys())
+
+
     def usage(self):
         print "Usage: %s [options] <URI> ..."%(my_name)
         print "Summary: Replays recording(s) identified by URI(s)."
@@ -66,33 +83,24 @@ class MyOptions(Options):
         print "   file     e.g., file:/tmp/bdr-user/recordings/*"
         print "   hdfs     e.g., hdfs:/hadoop/cluster5/hdfs-run"
         print "   Wildcards are permitted."
+
+        print "\nSupported tools:"
+        for (k, v) in sorted(tools.items()):
+            print "   %-30s %s"%(k, v.desc)
         Options.usage(self)
         return
 
-def do_replay():
-    plugins = []
-    if opt_tty_output_file:
-        plugins.append(tty.TtyOutput(opt_tty_output_by, opt_tty_output_file))
+class NullTool(Tool):
+    def __init__(self):
+        Tool.__init__(self, "null", None, "does no analysis")
 
-    if opt_classify_plane:
-        file_gid = classify.FileGID()
-        origin_files = []
+    def setup(self, group):
+        return
 
-        # XXX: must come after members are added for syscall handlers to 
-        # be called -- this is an annoying requirement
-        gold_standard = classify.TaintClassifier(origin_files, file_gid)
-        detectors = [classify.DataRateClassifier(file_gid), classify.TokenBucketClassifier(file_gid)]
-        detectors.append(gold_standard)
-        plugins.extend(detectors)
-        plugins.append(file_gid)
+    def finish(self):
+        return
 
-    group = controller.Controller(plugins=plugins)
-
-    # XXX: this is a hack; ideally, dcgen should be enabled by dtaint
-    if opt_classify_plane:
-        group.dcgen_enabled = True
-    group.load(args)
-
+def do_replay_work(group):
     misc.log("All systems go: %d node(s), %d task(s), %d probe(s)."%(len(group.nodes_by_uuid), len(group.task_by_tid), len(group.probe_list)))
 
     (virt_start_time, virt_end_time) = group.get_time()
@@ -111,8 +119,23 @@ def do_replay():
         pbar.finish()
     return total_length
 
+def do_replay():
+    plugins = []
+    if opt_tty_output_file:
+        plugins.append(tty.TtyOutput(opt_tty_output_by, opt_tty_output_file))
+
+    group = controller.Controller(plugins=plugins)
+    chosen_tool.setup(group)
+    group.load(args)
+    total_length = do_replay_work(group)
+    chosen_tool.finish()
+    return total_length
+
+
+register(NullTool())
+
 if __name__ == "__main__":
-    opt_parser = MyOptions()
+    opt_parser = MyOptions(tools)
     args = opt_parser.parse()
 
     if len(args) == 0:
@@ -125,3 +148,4 @@ if __name__ == "__main__":
     finish_time = time.time()
 
     misc.log("Replayed %f virtual second(s) in %f second(s)."%(total_length / 1000000.0, finish_time - start_time))
+

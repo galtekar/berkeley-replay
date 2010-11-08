@@ -19,7 +19,7 @@ Device_InitInode(struct InodeStruct *inodp, ulong rdev)
    int major = MAJOR(rdev);
 
    DEBUG_MSG(5, "major=%d minor=%d\n", major, MINOR(rdev));
-
+   ASSERT(major < MAX_DEVICES);
    initcb = deviceTable[major];
 
    /* Is the device major supported? */

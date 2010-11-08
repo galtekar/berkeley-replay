@@ -18,6 +18,8 @@ program execution using BDR.
 
 import sys, os
 import controller, dtaint, itertools, misc
+from options import *
+from tool import *
 
 class TokenBucket:
     def __init__(self, rate, size, curr_ts):
@@ -325,28 +327,63 @@ def compute_stats(base, target):
             false_positives = 0.0
         print "Id:", id, "False positives (%):", false_positives
 
-if __name__ == "__main__":
-    group = controller.Controller()
-    #group.dbg_level = 0
+class ClassifyTool(Tool):
+    def __init__(self):
+        opts = {
+            "data-files" : ArgOption("LIST", "track data from files in LIST", self.__set_origin_files)
+        }
+        optsec = OptionSection("pc", "Plane classifier options", opts)
+        Tool.__init__(self, "pc", optsec, "classifies code as 'control' or 'data'")
 
-    # XXX: needs to be enabled before adding members; should work
-    # before or after
-    group.dcgen_enabled = True
-    group.load(["file:/tmp/bdr-galtekar/recordings/*"])
+    def __set_origin_files(self, arg):
+        origin_files.add(arg)
+        return
 
-    # XXX: must come after members are added for syscall handlers to 
-    # be called -- this is an annoying requirement
-    gold_standard = TaintClassifier(group, origin_files)
+    def setup(self, group):
+        plugins = []
 
-    #DataRateClassifier(group)
-    detectors = [DataRateClassifier(group), TokenBucketClassifier(group)]
+        file_gid = classify.FileGID()
+        self.gold_standard = classify.TaintClassifier(origin_files, file_gid)
+        self.detectors = [classify.DataRateClassifier(file_gid), classify.TokenBucketClassifier(file_gid)]
+        detectors.append(gold_standard)
+        plugins.extend(detectors)
+        plugins.append(file_gid)
 
-    group.advance("forever")
+        group.add_plugin(plugins)
 
-    #print "Gold standard:", gold_standard.profile_by_id
-    #print "Gold standard:", gold_standard.file_gid.gid_map
+        # XXX: this is a hack; ideally, dcgen should be enabled by dtaint
+        group.dcgen_enabled = True
 
-    for detector in detectors:
-        compute_stats(gold_standard, detector)
-        #print detector, ":", detector.profile_by_id
-        #print detector, ":", detector.file_gid.gid_map
+    def finish(self):
+        for detector in self.detectors:
+            compute_stats(self.gold_standard, detector)
+            #print detector, ":", detector.profile_by_id
+            #print detector, ":", detector.file_gid.gid_map
+
+register(ClassifyTool())
+
+#if __name__ == "__main__":
+#    group = controller.Controller()
+#    #group.dbg_level = 0
+#
+#    # XXX: needs to be enabled before adding members; should work
+#    # before or after
+#    group.dcgen_enabled = True
+#    group.load(["file:/tmp/bdr-galtekar/recordings/*"])
+#
+#    # XXX: must come after members are added for syscall handlers to 
+#    # be called -- this is an annoying requirement
+#    gold_standard = TaintClassifier(group, origin_files)
+#
+#    #DataRateClassifier(group)
+#    detectors = [DataRateClassifier(group), TokenBucketClassifier(group)]
+#
+#    group.advance("forever")
+#
+#    #print "Gold standard:", gold_standard.profile_by_id
+#    #print "Gold standard:", gold_standard.file_gid.gid_map
+#
+#    for detector in detectors:
+#        compute_stats(gold_standard, detector)
+#        #print detector, ":", detector.profile_by_id
+#        #print detector, ":", detector.file_gid.gid_map

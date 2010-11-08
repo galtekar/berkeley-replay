@@ -28,28 +28,31 @@ SOFTWARE REQUIREMENTS:
    but 64-bit Linux may be supported in the future. Any distribution of
    Linux (e.g., Debain, Fedora, etc.) will do.
 
-   Compiling BDR requires a working GCC (>= 4.2) installation and Python
-   2, version >= 6. Python 3 is not currently supported.
+   Compiling BDR requires a working GCC (>= 4.1) installation.
+   
+   Running BDR requires Python 2, version >= 6. Python 3 is not currently
+   supported.
 
 COMPILING BDR:
    - Do a "make clean", then a "make".
 
-INSTALLING BDR:
-   - Do a "make install". This will create a directory in build/ that
-   will contain all the files you will need to record and replay BDR
-   recordings on a node. This directory needs to be copied to the remote
-   nodes doing the recording.
+INSTALLING BDR (optional):
+   - After a successful build, simply copy the contents of the
+   distributed/ directory to the location of your choosing, and point
+   your PATH to distributed/bin.
 
-   - A "make dist" produces a tarball of the installation directory, to
-   ease distribution.
+   - Optionally, a "make dist" produces a tarball of the distributed directory,
+   which can them be copied (e.g., via scp) to remote nodes.
 
 RUNNING BDR:
-   - First, we need to setup your environment.  Add the installation directory
-   (see above) to your PATH.
+   - First prep your environment for BDR.
+        o Turn off address-space randomization: this could confuse BDR
+        o Disable SE linux (since it prohibits certain mmap(MAP_FIXED) requests)
 
-   - Then to record, do "bdr-record /bin/my_fancy_distributed_program".
-   The recording will be saved by default to a local directory (see the
-   output of bdr-record to determine where).
+   - To record, do "distributed/bin/bdr-record
+   /bin/my_fancy_distributed_program".  The recording will be saved
+   by default to a local directory (see the output of bdr-record to
+   determine where).
 
-   - To replay all recordings in a directory, do "bdr-replay
+   - To replay all recordings in a directory, do "distributed/bin/bdr-replay
    file:/tmp/bdr-galtekar/recordings/*".

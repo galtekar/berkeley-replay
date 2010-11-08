@@ -44,6 +44,7 @@ my_dir = os.path.dirname(sys.argv[0])
 server_bin = my_dir + "/bdr-portserv"	
 server_out = my_dir + "/server.out"
 env = os.environ
+misc.QUIET = False
 
 
 def call_as_daemon( cmd_list, output_filename ):
@@ -222,7 +223,7 @@ def start_record( args ):
     else:
         exec_args = args
         exec_bin = args[0]
-    misc.log( "Executing", args, "in %s mode."%(mode_str) )
+    #misc.log( "Executing", args, "in %s mode."%(mode_str) )
     #print exec_bin, exec_args
 
     try:
@@ -254,25 +255,26 @@ def show_banner():
     misc.log( "Berkeley Deterministic Replay (%s)"%(dbg_str) )
     misc.log( "Copyright 2004-2010 University of California. All rights reserved." )
 
-class MyOptions(Options):
+class MyOptions(HelpOptions):
     def __init__(self):
         my_options = {
-            "save-as" : ("URI", "saves recording to URI (default: local)",
+            "save-as" : ArgOption("URI", "saves recording to URI",
                 self.__save_as),
-            "debug" : ("LEVEL", "sets debug logging level to LEVEL",
+            "debug" : ArgOption("LEVEL", "sets debug logging level to LEVEL",
                 self.__debug),
-            "name-prefix" : ("STRING", "sets prefix of recording's name",
+            "name-prefix" : ArgOption("STRING", "sets prefix of recording's name",
                 self.__name_prefix),
-            "verbose" : (None, "enables console status messages",
-                self.__verbose),
-            "halt-on-abort" : (None, "awaits debugger if vkernel crashes",
+            "quiet" : ArglessOption("disabled console status messages",
+                self.__quiet),
+            "halt-on-abort" : ArglessOption("awaits debugger if vkernel crashes",
                 self.__halt_on_abort),
-            "disable-de" : (None, "disables direct execution",
+            "disable-de" : ArglessOption("disables direct execution",
                 self.__disable_de),
-            "disable-tags" : (None, "disables tagged messages",
+            "disable-tags" : ArglessOption("disables tagged messages",
                 self.__disable_tags),
         }
-        Options.__init__(self, my_options)
+        basesec = OptionSection("base", "Options", my_options)
+        HelpOptions.__init__(self, basesec, None)
         return
 
     def usage(self):
@@ -290,8 +292,8 @@ class MyOptions(Options):
         assert(0)
         save_dir_prefix = arg
 
-    def __verbose(self, arg):
-        misc.QUIET = False
+    def __quiet(self):
+        misc.QUIET = True
 
     def __halt_on_abort(self):
         _vkernel_opts["Base.Debug.PauseOnAbort"] = 1

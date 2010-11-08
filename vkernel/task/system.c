@@ -457,7 +457,7 @@ SystemPrintUsage()
    printf(
           "Berkeley Deterministic Hypervisor\n"
           "Copyright (C) University of California. All rights reserved.\n\n"
-          "Usage: bdr-hv [options] [target] ...\n"
+          "Usage: bdr-kernel [options] [target] ...\n"
          );
    printf("Available options:\n");
    printf("-c,--conf=FILE     Alternate configuration file\n");
