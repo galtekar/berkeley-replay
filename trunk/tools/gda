@@ -1,0 +1,3 @@
+#!/bin/sh 
+gdb -ex "attach `ps -Al | grep "log:\|rep:" | gawk -F: '{ split($0,
+fields, " "); print fields[4]; }'`" -ex "where" --quiet

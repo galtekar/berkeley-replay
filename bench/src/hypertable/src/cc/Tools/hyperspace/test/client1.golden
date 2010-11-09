@@ -1,0 +1,99 @@
+SESSION CALLBACK: Safe
+Welcome to the Hyperspace command interpreter.  Hyperspace
+is a global namespace and lock service for loosely-coupled
+distributed systems.  Type 'help' for a description of commands.
+
+
+<< BasicTest >>
+mkdir dir1
+mkdir how/now/brown/cow
+ERROR hyperspace : Hyperspace 'mkdir' error, name=/how/now/brown/cow : HYPERSPACE bad pathname
+HYPERSPACE bad pathname
+delete foo
+ERROR hyperspace : Hyperspace 'delete' error, name=/foo : HYPERSPACE bad pathname
+HYPERSPACE bad pathname
+open foo flags=READ
+ERROR hyperspace : Hyperspace 'open' error, name=/foo flags=0x1 events=0x0 : HYPERSPACE bad pathname
+HYPERSPACE bad pathname
+open foo flags=READ|CREATE
+open foo flags=READ|CREATE|EXCL
+ERROR hyperspace : Hyperspace 'open' error, name=/foo flags=0x19 events=0x0 : HYPERSPACE file exists
+HYPERSPACE file exists
+lock foo EXCLUSIVE
+ERROR hyperspace : Hyperspace 'lock' error, name='/foo' : HYPERSPACE mode restriction
+HYPERSPACE mode restriction
+exists dir1
+true
+exists foo
+true
+exists bar
+false
+attrget foo testattr
+ERROR hyperspace : Hyperspace 'attrget' error, name=testattr : HYPERSPACE attribute not found
+HYPERSPACE attribute not found
+open flags=READ /
+readdir /
+(dir) dir1
+      foo
+close /
+delete dir1
+close foo
+attrset foo testattr="Hello, World!"
+ERROR hyperspace : Hyperspace 'attrset' error, name=testattr : HYPERSPACE invalid handle
+HYPERSPACE invalid handle
+attrget foo testattr
+ERROR hyperspace : Hyperspace 'attrget' error, name=testattr : HYPERSPACE invalid handle
+HYPERSPACE invalid handle
+attrdel foo testattr
+ERROR hyperspace : Hyperspace 'attrdel' error, name=testattr : HYPERSPACE invalid handle
+HYPERSPACE invalid handle
+delete foo
+create foo flags=READ|WRITE attr:msg1="Hello, World!" attr:msg2="How now brown cow"
+close foo
+delete foo
+
+<< NotificationTest >>
+mkdir dir1
+open dir1 flags=READ|CREATE|WRITE event-mask=ATTR_SET|ATTR_DEL|CHILD_NODE_ADDED|CHILD_NODE_REMOVED|LOCK_ACQUIRED|LOCK_RELEASED
+CHILD NODE ADDED foo
+CHILD NODE REMOVED foo
+ATTR SET fox
+ATTR DEL fox
+LOCK ACQUIRED exclusive
+LOCK RELEASED
+close dir1
+
+<< LockTest >>
+open lockfile flags=READ|CREATE|WRITE event-mask=ATTR_SET|ATTR_DEL|CHILD_NODE_ADDED|CHILD_NODE_REMOVED|LOCK_ACQUIRED|LOCK_RELEASED
+LOCK ACQUIRED exclusive
+LOCK RELEASED
+LOCK ACQUIRED exclusive
+LOCK RELEASED
+LOCK ACQUIRED shared
+LOCK RELEASED
+LOCK ACQUIRED exclusive
+LOCK RELEASED
+LOCK ACQUIRED exclusive
+LOCK RELEASED
+LOCK ACQUIRED shared
+LOCK RELEASED
+close lockfile
+delete lockfile
+
+<< EphemeralFileTest >>
+mkdir dir1
+open dir1 flags=READ|CREATE|WRITE event-mask=ATTR_SET|ATTR_DEL|CHILD_NODE_ADDED|CHILD_NODE_REMOVED|LOCK_ACQUIRED|LOCK_RELEASED
+CHILD NODE ADDED foo
+CHILD NODE REMOVED foo
+close dir1
+delete dir1
+
+<< SessionExpirationTest >>
+mkdir dir1
+open dir1 flags=READ|CREATE|WRITE event-mask=ATTR_SET|ATTR_DEL|CHILD_NODE_ADDED|CHILD_NODE_REMOVED|LOCK_ACQUIRED|LOCK_RELEASED
+CHILD NODE ADDED foo
+LOCK ACQUIRED exclusive
+CHILD NODE REMOVED foo
+LOCK RELEASED
+close dir1
+delete dir1

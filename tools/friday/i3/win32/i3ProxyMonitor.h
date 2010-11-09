@@ -1,0 +1,10 @@
+#define IDM_EXIT                        100
+#define IDI_I3PROXYMON                  101
+#define IDI_ICOSTOP                     102
+#define IDI_ICORUN                      103
+#define IDI_ICONOSRV                    104
+#define IDI_ICODISCONNECT               105
+#define IDC_SMANAGER                    106
+#define IDM_SM_START                    0x1000
+#define IDM_SM_STOP                     0x2000
+#define IDM_SM_COLDSTART                0x4000

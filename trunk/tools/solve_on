@@ -1,0 +1,4 @@
+#!/bin/bash
+
+scp $1 $2.millennium.berkeley.edu:/work/galtekar/forms
+ssh $2.millennium.berkeley.edu "/work/galtekar/bin/bin/stp -p < /work/galtekar/forms/$1"

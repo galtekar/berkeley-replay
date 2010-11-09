@@ -1,0 +1,77 @@
+#! /bin/bash 
+
+NO_ARGS=0
+ERROR=255
+CACHE=0
+#NONMAL="non-malicious"
+NONMAL=""
+TOPDIR="./"
+if [[ $# -lt $NO_ARGS ]]
+then 
+	echo "Usage:$0 -n <NODES> -d <CACHE> -t <TOP_DIR>" && exit $ERROR
+fi
+
+VERBOSE=0
+while getopts ":n:d:hv" Option
+do
+	case $Option in
+		n) NODES=$OPTARG;;
+		d) CACHE=$OPTARG;;
+	#	t) TOPDIR=$OPTARG;;
+		h) echo "Usage:$0 -n <NODES> -d <CACHE>" && exit 0;;
+		v) VERBOSE=1;;
+	esac
+done
+#OPTIND=1
+shift $((OPTIND-1))
+TOPDIR=$1
+
+if [ $VERBOSE -eq 1 ]
+then
+	echo $TOPDIR
+fi
+if  ls -1d ${TOPDIR}/exp.* &>/dev/null
+then
+	if [ -z $NODES ]
+	then 
+		NODES=`ls -1d exp.*|wc -l`
+	fi
+else
+	exit $ERROR
+fi
+COUNT=0
+for((i=0;i<NODES;i=i+1));do 
+	if [ $VERBOSE -eq 1 ]
+	then
+		printf "%d\t" $COUNT
+	fi	
+	START=`head -1 ${TOPDIR}/exp.$i-*/dnslog*`
+	if [ $CACHE -ne 0 ]
+	then 
+		END=`grep "Cache size.*$CACHE" ${TOPDIR}/exp.$i-*/dnslog*|head -1`
+	else
+		END=`grep "Cache size.*" ${TOPDIR}/exp.$i-*/dnslog*|tail -1`
+	fi
+	if [[ ! -z "$START" && ! -z "$END" ]];
+	then
+		if [ $VERBOSE -eq 1 ]
+		then
+			echo "$END"
+		fi	
+#		START=`echo $START|awk 'BEGIN {FS=":| |[[]|[]]"} {print $2*3600+$3*60+$4}'`
+#		END=`echo $END|awk 'BEGIN {FS=":| |[[]|[]]"} {print $2*3600+$3*60+$4}'`
+#		echo $START|awk 'BEGIN {FS=":| |[[]|[]]"} {print $1,",",$2,",",$3,",",$4,",",$5,",",$3*60*1000+$4+10000+$5}'
+#		echo $END|awk 'BEGIN {FS=":| |[[]|[]]"} {print $1,$2,$3,$4,$5,$3*60*1000+$4+10000+$5}'
+		START=`echo $START|awk 'BEGIN {FS=":| |[[]|[]]"} {print ($3*60+$4)*1000000+$5}'`
+		END=`echo $END|awk 'BEGIN {FS=":| |[[]|[]]"} {print ($3*60+$4)*1000000+$5}'`
+		DIFF=$(($END-$START))
+		if [ $VERBOSE -eq 0 ]
+		then
+#			echo $DIFF
+			echo $END
+		fi	
+	fi
+	(( COUNT++ ))
+done
+
+

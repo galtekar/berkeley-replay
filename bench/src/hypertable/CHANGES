@@ -1,0 +1,34 @@
+
+Version 0.9.0.4:
+(2008-02-25)
+
+  * Fixed issue #47 Cleaned up DROP_TABLE handling in RangeServer and Client
+  * Fixed issue #63 Dropped updates under concurrent loading
+  * Fixed race condition in Master between server join & register
+  * Fixed RangeServer hang after TIMESTAMP_ORDER_ERROR error
+  * Fixed performance bug that was hurting random reads
+
+Version 0.9.0.3:
+(2008-02-19)
+
+  * Fixed bug in MergeScanner where deletes were being wrongly applied
+  * Detect and report "supplied timestamps not strictly increasing" error
+  * Added testing options KEYS_ONLY and RETURN_DELETES to SELECT statement
+  * Removed unused tests and associated data to bring source tarball below 20MB
+  * Modified ApacheLogParser to return non-coliding timestamps for requests that happened in the same second
+
+Version 0.9.0.2:
+(2008-02-12)
+
+  * Made all timestamps interpreted as GMT (issue #56)
+  * Catch table scanner / mutator exceptions in Master GC logic (issue #55)
+  * Fixed Master abort when last_table_id attribute of /hypertable/master not found
+  * Modified kosmosBroker properties to be capitalized camel case
+
+Version 0.9.0.1:
+(2008-02-07)
+
+  * Fixed compile errors on Ubuntu, FC5 and FC6
+  * Got rid of AsyncComm regression dependency on /usr/share/dict/words
+  * Fixed critical GC bu that deleting good MEATADATA rows
+  * Fixed FindBoost.cmake to work if only .so files are installed

@@ -1,0 +1,2 @@
+#!/bin/sh 
+less `tail -n 1 ~/.bdr_history`/dbg-log.$1

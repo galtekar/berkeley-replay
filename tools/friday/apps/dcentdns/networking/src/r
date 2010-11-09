@@ -1,0 +1,2 @@
+#!/bin/tcsh
+./scripts/liblog_start_servers.pl -l ucb_i3 ./tests/topology.10.txt ./tests/pmap.10.2.txt

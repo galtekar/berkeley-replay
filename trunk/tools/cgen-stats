@@ -1,0 +1,15 @@
+#!/bin/sh
+
+grep "Stats --- 0x" /tmp/bdr-galtekar/debug/dbg-log.1 | \
+        gawk -F : '
+      {
+           split($0, fields, " ");
+           addr_str = substr(fields[3], 1, index(fields[3], ":")-1);
+           if (addr_str < "0x9000000") print addr_str, fields[4];
+        }
+' | sort -g > cgen.dat
+
+
+# Compute stats
+grep "Stats --- [Prof]" /tmp/bdr-galtekar/debug/dbg-log.1 | \
+        gawk -f cgen-stats.gawk

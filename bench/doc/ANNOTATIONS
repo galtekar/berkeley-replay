@@ -1,0 +1,125 @@
+General strategies
+==================
+   o Annotate as close to the incoming user-data reception point as
+   possible. This means going deep into the stack (e.g., close to the
+   libc call). The main challenge is that you need to do this
+   selectively, just for user-data. Unfortunately, there is a semantic
+   gap at lower levels of the stack, so determining what is user-data or
+   not at the point is not easy.
+
+##########################
+## KFS CHUNKSERVER
+
+   Annotation Strategy
+   ===================
+   For user-data (i.e., chunk data) annotation purposes the following
+   functions are relevant.
+
+   Reads from Chunkserver
+   ----------------------
+      - QCDiskQueue::Queue::OpenFile() opens the file via open()
+      - QCDiskQueue::Queue::Process() does the reading or writing via readv()
+         and writev(); this is probably irrelevant; we can annotate
+         the fd right after the open.
+
+   Writes to Chunkserver
+   ---------------------
+      - User data enters through ClientSM::HandleClientCmd(), in the
+      form of WRITE_PREPARE messages (i.e., op->op ==
+      CMD_WRITE_PREPARE). User data is placed within wop->dataBuf
+      buffer.
+      - Challenge: wop->dataBuf is an IOBuffer class that abstracts the
+      underlying buffer. In fact an IOBuffer consists of a bunch of
+      IOBufferData classes. So to mark data, we may need to iterate
+      through each of thhe IOBufferDatas and mark the internal buffer
+      (mData).
+
+   Chunkserver to chunkserver copies
+   ---------------------------------
+   Reads from other chunkservers are serviced by the same diskqueue
+   mechanism used to service reads by clients.
+   XXX: This is done for replication, re-replication (when corrupted
+         data is detected), and rebalancing (when nodes are
+            under/overutilized).a
+
+   Relevant annotation points:
+      Reads from other chunkservers are received at
+      RemoteSyncSM::HandleResponse()
+
+   Relevant Background
+   ===================
+   o Client requests enter the chunkserver through the KfsOps interface (see
+   KfsOps.h/cc).
+      - KFS::ParseCommand() parses the incoming request and dispatches
+      it by instantiating a KfsObject. The relevant KfsObjects are:
+         - WriteIdAllocOp : a hint that data to be written is coming
+         - WritePrepareOp : a write operation -- may be a portion 
+         of a larger write made by the client (see 
+         KfsClientImpl::DoLargeWriteToServer()). This is what kfs
+         clients send...they do not seem to send WriteOps
+         - WriteOp : a unit of write work for a given writeId...used
+         only by the chunkserver
+         - WritePrepareFwdOp : write data forwarded from another
+         chunkserver
+
+      - ClientSM::HandleClientCmd forms KfsOps and submits thems for
+      processing. If it's a write prepare op, waits until all data bytes in
+      the write prepare are received.
+
+   o Requests for specific chunk ids are handled by the ChunkManager,
+   which in turn schedules asynchronous disk I/Os for the request
+   (see ChunkManager::ReadChunk()). Upon completion of the io,
+   ReadChunkDone() or WriteChunkDone() are invoked. ReadChunkDone
+   computes checksum of the incoming chunk, signalling errors if
+   computed checksums do not match those send by the client.
+
+   o Asynchronous disk I/O and notification is performed by the QCDiskQueue
+   class. This class provides notification (via callback, and periodic
+   timer-based checks). When a request is complete, it invokes the
+   callback specified for the event. For example, it ultimately invokes
+   ReadOp::HandleDone with the data on a EVENT_DISK_READ.
+
+
+########################
+## KFS CLIENT LIB
+
+   Annotation Strategy
+   ===================
+
+   Reads
+   -----
+   The challenge: Several functions we could annotate, but at which
+   abstraction level should we do it? For example, here's the call stack
+   for a typical read:
+
+   KfsClient::Read() --> KfsClientImpl::Read() -->
+   KfsClientImpl::ReadChunk() --> KfsClientImpl::ReadFromServer()
+   --> KfsClientImpl::DoSmall/LargeReadFromServer() -->
+   KfsClientImpl::DoPipelinedRead() --> KfsClientImpl::DoOpResponse()
+
+   If we annotate the values received on the socket in
+   KFS::DoOpResponse(), then we risk accidentally marking control plane
+   data (since that function is invoked for non-read operations as well).
+   At the other extreme, we could mark the destination buffer specified in
+   KfsClient::Read(), but this will result in data-plane code being missed
+   (e.g., checksumming done within KfsClientImpl::DoPipelinedRead()).
+
+   The current strategy is find a lowest location in the stack that
+   does not exclude important data-processing code. For example,
+   KfsClientImpl::DoPipeleinedRead obtains the chunk data from the
+   chunkserver and then calls VerifyChecksum() on that data. If we
+   annotate right after the download but right before the checksum verify
+   then we can be sure that the verification code gets included in the
+   data plane.
+
+   Writes
+   ------
+   We could annotate KfsCLientImpl::Write, and we would probably get
+   decent data-plane coverage. But to be sure that we got everything,
+   we need to annotate the client tools (e.g., tools/cptokfs,
+   tools/cpfromkfs) that load the data source (i.e., the file to be
+   written).
+
+   The relevant code for cptokfs is
+   tools/KfsToolsCommon.cc::BackupFile2().  It opens the file and copies
+   contents to KFS via calls to KfsClient::Write().

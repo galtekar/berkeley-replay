@@ -1,0 +1,165 @@
+def bfs(C, F, source, sink):
+	P = [-1] * len(C) # parent in search tree
+	P[source] = source
+	queue = [source]
+	while queue:
+		u = queue.pop(0)
+		for v in xrange(len(C)):
+			if C[u][v] - F[u][v] > 0 and P[v] == -1:
+				P[v] = u
+				queue.append(v)
+				if v == sink:
+					path = []
+			
+					while True:
+						path.insert(0, v)
+						if v == source:
+							break
+						v = P[v]
+
+					return path
+
+	return None
+
+# Returns Max-flow flow matrix.
+def edmonds_karp(C, source, sink):
+	n = len(C) # C is the capacity matrix
+	F = [[0] * n for _ in xrange(n)]
+	# residual capacity from u to v is C[u][v] - F[u][v]
+
+	while True:
+		path = bfs(C, F, source, sink)
+		if not path:
+			break
+		flow = 10000000 # Inf
+		# traverse path to find smallest capacity
+		for i in xrange(len(path) - 1):
+			u,v = path[i], path[i+1]
+			flow = min(flow, C[u][v] - F[u][v])
+
+		# traverse path to update flow
+		for i in range(len(path) - 1):
+			u,v = path[i], path[i+1]
+			F[u][v] += flow
+			F[v][u] -= flow
+
+	return F
+
+def find_all_paths(graph, start, end, path=[]):
+	path = path + [start]
+	if start == end:
+		return [path]
+
+	paths = []
+	for node in xrange(len(graph[start])):
+		if graph[start][node] > 0 and (node not in path):
+
+			newpaths = find_all_paths(graph, node, end, path)
+			for newpath in newpaths:
+				paths.append(newpath)
+
+	return paths
+
+def find_path(graph, start, end, path=[]):
+	path = path + [start]
+
+	if start == end:
+		return path
+	
+	for neighbor in xrange(len(graph[start])):
+		if graph[start][neighbor] > 0 and (neighbor not in path):
+
+			newpath = find_path(graph, neighbor, end, path)
+			if newpath: 
+				return newpath
+
+	return None
+
+def edge_disjoint_paths(C, source, sink):
+	n = len(C) # C is the capacity matrix
+	F = edmonds_karp(C, source, sink)
+
+	assert(source != sink)
+
+	disjoint_paths = []
+	edge_set = set([])
+
+	all_paths = find_all_paths(F, source, sink)
+
+	for path in all_paths:
+		duplicate_edge = False
+
+#print "Path = ", path
+
+		path_edge_set = set([])
+		for i in xrange(len(path)-1):
+			path_edge_set.add((path[i], path[i+1]))
+			
+
+#		print len(edge_set & path_edge_set)
+		if len(edge_set & path_edge_set) == 0:
+			disjoint_paths.append(path)
+			edge_set = edge_set | path_edge_set
+
+#print edge_set, path_edge_set
+
+	return disjoint_paths
+
+def vertex_disjoint_paths(C, source, sink):
+	n = len(C) # C is the capacity matrix
+	F = edmonds_karp(C, source, sink)
+
+	assert(source != sink)
+
+	paths = []
+
+	while True:
+		path = find_path(F, source, sink)
+		if path:
+			for i in range(len(path)-1)[1:len(path)-2]:
+				for node in F:
+					node[i] = 0
+
+			paths.append(path)
+		else:
+			break
+
+	return paths
+		
+def max_flow(C, source, sink):
+	n = len(C) # C is the capacity matrix
+	F = edmonds_karp(C, source, sink)
+
+	return sum([F[source][i] for i in xrange(n)])
+
+# Produces an MxN bitmap adjacency matrix that is initialized
+# with the specified paths.
+def path_matrix(m, n, paths):
+	# Matrices must be rank 2 with at least one row and column
+	assert(m > 0 and n > 0)
+
+	result = []
+	for i in range(m):
+		result.append([0]*n)
+
+	for path in paths:
+		for i in xrange(len(path)-1):
+			result[path[i]][path[i+1]] = 1
+
+	return result
+
+def zero_matrix(m, n):
+	# Matrices must be rank 2 with at least one row and column
+	assert(m > 0 and n > 0)
+
+	result = []
+	for i in range(m):
+		result.append([0]*n)
+
+	return result
+
+M = path_matrix(10, 10, [[0, 1, 2, 3], [0, 4, 5, 3], [0, 7, 4, 3]])
+print find_all_paths(M, 0, 3) 
+print edge_disjoint_paths(M, 0, 3)
+print vertex_disjoint_paths(M, 0, 3)
+print max_flow(M, 0, 3)

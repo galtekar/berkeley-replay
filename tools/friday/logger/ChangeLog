@@ -1,0 +1,12 @@
+* Made this sucker more fault-tolerant: abrupt client disconnects are
+handled gracefully by simple terminating the client thread after printing
+out a brief error message.
+
+* We now support logging to shared memory as well as through sockets.
+An abrupt client crash results in shared memory contents flushed to disk.
+
+* The logger binary in now called loggerbin. It has been wrapper by a Perl
+script called logger, which performs cleanup after the logger is finished.
+
+* The logger now simply dumps logs segments to disk in binary form. The
+log2xml utility can be used to convert those binary files to XML.

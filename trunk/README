@@ -1,0 +1,9 @@
+To compile:
+   make clean
+   make
+
+To record:
+   console/bdr-record
+
+To replay:
+   console/bdr-replay

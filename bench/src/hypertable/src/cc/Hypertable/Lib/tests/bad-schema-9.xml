@@ -1,0 +1,12 @@
+<Schema>
+  <AccessGroup name="default" inMemory="foo">
+    <ColumnFamily>
+      <Name>content</Name>
+      <MaxVersions>1</MaxVersions>
+    </ColumnFamily>
+    <ColumnFamily>
+      <Name>language</Name>
+      <ttl>abc</ttl>
+    </ColumnFamily>
+  </AccessGroup>
+</Schema>

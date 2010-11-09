@@ -1,0 +1,116 @@
+# Assumptions:
+# ``dbreak'' sets the specified breakpoint on all nodes
+# ``dwatch'' sets the specified watchpoint on all nodes
+# ``watch'' sets the specified watchpoint only on the active node
+# ``dbreak'' and ``dwatch'' may be nested
+# Auxiliarly Python functions may be defined
+
+# Mapping from nodes to neighbors.
+py graph = {}
+
+# Mapping from Friday node IDs to app-level node IDs.
+py nodes = {}
+
+# Returns a list of all paths (i.e., list of lists) from start to end.
+py def find_all_paths(graph, start, end, path=[]):
+	if start == end:
+		return [path]
+	# start doesn't have any neighbors, and thus no path to end
+	if not graph.has_key(start):
+		return []
+
+	paths = []
+	for node in graph[start]:
+		# Avoid cycles. 
+		if node not in path:
+			newpaths = find_all_paths(graph, node, end, path)
+			for newpath in newpaths:
+				paths.append(newpath)
+	return paths
+
+py def find_disjoint_paths(pathlist, start, end):
+	# See if any other path in pathlist shares the same vertex.
+	# If so, remove it from the pathlist and recurse to see if
+	# that set of paths is now disjoint.
+
+	for path1 in pathlist:
+		for vertex1 in path:
+			for path2 in pathlist:
+				if path2 != path1:
+					for vertex2 in path2:
+						if vertex1 == vertex2:
+							find_disjoint_paths(pathlist.remove(path))
+
+	return pathlist
+
+
+# We want to create a mapping from Friday node ID to IP address.
+# This is how we do it with watchpoints. Note that the top-level
+# breakpoint is unavoidable since we can't watch the IP address
+# field until after the Server object has been created.
+dbreak Server::Server
+command
+	watch this->ip		# ``ip'' is a char array
+	py
+		# Create a mapping from Friday node ID to IP address.
+		my_addr = @(this->ip)
+		if not my_addr:
+			continue
+		nodes[my_addr] = __NODE__
+	yp
+end
+
+# Break at Server::init_neighbors, just right after creating each
+# neighbor object. Use the opportunity to set watchpoints on
+# key neighbor object state.
+dbreak server.cpp:428
+command
+	# Take this opportunity to set watchpoints on neighbor's 
+	# connection status variable, so that we may keep our 
+	# connection graph updated.
+	watch neighbor->status
+		py
+			# Update the graph when neighbor connects or disconnects.
+			status = @(neighbor->status)
+			neighbor_addr = @(neighbor->ip)
+
+			if (status == @(Neighbor::CONNECTED)):
+				# Make sure he's not already in the neighbor list
+				if not graph[__NODE__].index(node[neighbor_addr]):
+					if graph.hash_key(__NODE__):
+						graph[__NODE__].append(node[neighbor_addr])
+					else:
+						# Make an entry for this node since it is not in 
+						# the graph already.
+						graph[__NODE__] = [node[neighbor_addr]]
+			else:
+				graph[__NODE__].remove(node[neighbor_addr])
+		yp
+end
+
+# k-disjoint paths verfication at MessageHandler::path_vector_test.
+dbreak message.cpp:924
+py
+	node_found_k_paths = @(disjointPaths)
+	k = @(server->k)
+	dest_addr = @(ki->ip)
+
+	# How many disjoint paths are there from this node to
+	# dest_addr, according to our global knowledge?
+	we_found_k_paths = False
+	if len(find_disjoint_paths(find_all_paths(__NODE__, node[dest_addr]))) >= k:
+		we_found_k_paths = True
+
+	# Does our global knowledge of the disjoint paths match that
+	# of the node's local knowledge?
+	if we_found_k_paths and not node_found_k_paths:
+		print "Path is reliable, but node __NODE_ thinks it's unreliable!"
+	elif not we_found_k_paths and node_found_k_paths:
+		print "Path is unreliable, but node __NODE__ thinks it's reliable!!"
+yp
+
+
+
+
+# Challenges:
+# Debugging/testing predicates is not simple.

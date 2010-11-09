@@ -1,0 +1,18 @@
+<Schema>
+  <AccessGroup name="default">
+    <ColumnFamily>
+      <Name>content</Name>
+      <MaxVersions>3</MaxVersions>
+    </ColumnFamily>
+    <ColumnFamily>
+      <Name>language</Name>
+      <ttl>129600</ttl>
+    </ColumnFamily>
+  </AccessGroup>
+  <AccessGroup name="volatile" inMemory="true">
+    <ColumnFamily>
+      <Name>location</Name>
+      <MaxVersions>1</MaxVersions>
+    </ColumnFamily>
+  </AccessGroup>
+</Schema>

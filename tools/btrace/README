@@ -1,0 +1,28 @@
+----- What is this? -----
+A PinTool for efficiently collecting a program execution branch trace.
+While traditional branch tracing tools log the outcome of all branches, or
+seek to reduce tthe cost of each logging operation, we our trace attempts
+to minimize the number of branch outcomes that are logged.  The goal is
+to reconstruct branch outcomes that were not logged at a later time.
+
+----- How does it work? ------
+To achieve low overhead tracing, our tracer employs a branch predictor
+to predict the outcome of all branches. If the predictor correctly
+predicts the outcome of a branch, then that outcome need not be logged,
+since, assuming the predictor is deterministic, it will make the same
+prediction if run along the same path-prefix. On the other hand, if the
+predictor mispredicts, then we must log the location (specifically, the
+branch count) of the mispredict.  Fortunately, most programs have a very
+low misprediciton rate, which means that the resulting tracing overhead
+(log file size, slowdown due to memory-bus transactions) is fairly low.
+
+Ideally, our tracer should be able to leverage the CPU's branch
+predictor. But that is difficult, since it operates at the
+microarchitectural level and it's hard to know if it's deterministic.
+For the mean time, we employ a software predictor. The particular
+predictor we leverage is the 2-level BTB scheme used in modern x86
+processors, with a RSB for accurately prediction the targets of return
+instructions. A key difference is that our BTB is idealized, in order
+to ensure better prediction/compression of branch tracer. The tracer
+updates the software branch predictor's state on each branch based on
+whether there was a mispredict of that branch or not.

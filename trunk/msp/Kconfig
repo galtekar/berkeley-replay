@@ -1,0 +1,8 @@
+menu "Memory Sharing Protocol (MSP) support"
+
+config MSP
+	bool "Memory Sharing Protocol (MSP) support"
+	depends on X86_32 && EXPERIMENTAL && !X86_PAE && FUTEX && !X86_VOYAGER
+   default y
+
+endmenu

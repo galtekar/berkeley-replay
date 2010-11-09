@@ -1,0 +1,10 @@
+Copied from hypertable-0.9.2.7-alpha distribution test suite.
+
+Minor modifications by galtekar.
+
+To run, just type:
+
+./run.sh
+
+This will launch the servers and startup a client, which will dump data
+and get it back out.

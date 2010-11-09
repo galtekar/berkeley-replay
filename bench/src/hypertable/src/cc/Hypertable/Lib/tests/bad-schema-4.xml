@@ -1,0 +1,12 @@
+<Schema>
+  <AccessGroup name="default" foo="bar">
+    <ColumnFamily>
+      <Name>content</Name>
+      <MaxVersions>1</MaxVersions>
+    </ColumnFamily>
+    <ColumnFamily>
+      <Name>language</Name>
+      <ttl>604800</ttl>
+    </ColumnFamily>
+  </AccessGroup>
+</Schema>

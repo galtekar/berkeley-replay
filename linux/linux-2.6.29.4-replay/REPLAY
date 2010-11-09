@@ -1,0 +1,16 @@
+
+SHPT : Shadow Page Table Support
+==================================
+
+Requirements
+-------------
+   * HugeTLB support must be turned off; currently unimplemented
+   
+
+VKERNEL : Vkernel Support
+==================================
+
+TODO:
+
+* sysenter syscall interception
+* math_emulate() isn't called for non CONFIG_X86_32 code

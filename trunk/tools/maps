@@ -1,0 +1,2 @@
+#!/bin/sh 
+cat /proc/`ps -Al | grep "log:\|rep:\|bdr" | gawk -F: '{ split($0,fields, " "); print fields[4]; }'`/maps

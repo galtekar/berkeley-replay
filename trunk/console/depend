@@ -1,0 +1,24 @@
+msg_stub.o: msg_stub.c /scratch/galtekar/src/logreplay/trunk/include/vk.h \
+  /scratch/galtekar/src/logreplay/trunk/include/vk-client-call.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/public.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/compiler.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/arch.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/x86.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/debug.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/errops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/syscall.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/syscallids.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/listops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/mapops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/fdops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/netops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/bitops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/misc.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/clock.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/hexops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/ratelimit.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/string.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/segops.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/ringbuffer.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/hijack.h \
+  /scratch/galtekar/src/logreplay/trunk/libcommon/child.h

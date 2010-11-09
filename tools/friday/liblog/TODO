@@ -1,0 +1,33 @@
+* SIGSEGVs must be delivered immediately. During replay, we have to
+be careful about how we interpret these.
+
+* Make sure none of the libraries we use call malloc? Or if they do, we 
+want them to use our malloc (tmalloc).
+
+* We need to make sure ckpt_ckpt is atomic with respect to our cooperative
+scheduler. That is, we don't want any handoffs while a thread is taking
+a checkpoint, because that would make the checkpoint inconsistent.
+	- Make sure all library calls made by libckpt go directly to the
+	libc version and not our wrappers? The question is, should we
+	internatilize libckpt? Right now, we treat it as an application library
+	and handle system calls through overlord wrappers.
+	FIX: By unsetting the done_with_init flag before we drop a checkpoint,
+	we preclude invoke the scheduler, and therefore we have exclusive
+	access until that flag is set again (which it is after the checkpoint
+	is dropped).
+
+* What if the active thread of a process is in __ASYNC_CALL_LIBC when it
+receives a checkpoint signal? That's a bad place to recover to.
+	- Upon recovery, have all threads (including the main thread) longjmp
+	to the setjmp location in INVOKE_COSCHEDULER(). That way, the
+	effects of the __ASYNC_CALL_LIBC are undone.
+
+* Unmask log regions after your detach from them.
+
+* Do not allow another checkpoint to take place while one is in progress.
+If the checkpoint timer interval is too short (say 1 second), then
+it is possible for the next checkpoint to commence even though the
+current checkpoint hasn't finished yet. Right now, I get around this by
+keep a lower of 3 seconds for the checkpoint timer interval, but this needs
+to be fixed eventually. The main problem appars to be the fact the our wrappers
+are reentrant.

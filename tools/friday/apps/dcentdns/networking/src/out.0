@@ -1,0 +1,117 @@
+liblog: starting '/home/ucb_i3/galtekar/remote_package/logger/logger.py 5485 1'
+*********************************************************************
+*                                                                   *
+* LIBLOG 1.0 last compiled Sep  9 2006 17:08:25                     *
+*                                                                   *
+* PID: 13085   DEBUG_LEVEL: 00   TIME: Sun Sep 24 04:47:08 2006     *
+*                                                                   *
+*********************************************************************
+My id=0 hostname=csplanetlab2.kaist.ac.kr port=27000.
+Created neighbor object: id=1 hostname=csplanetlab3.kaist.ac.kr ip=143.248.139.170 port=27000
+Created neighbor object: id=4 hostname=planet1.calgary.canet4.nodes.planet-lab.org ip=205.189.32.129 port=27000
+Created neighbor object: id=5 hostname=planet1.montreal.canet4.nodes.planet-lab.org ip=205.189.32.147 port=27000
+Created neighbor object: id=7 hostname=planet1.pittsburgh.intel-research.net ip=12.108.127.136 port=27000
+Created neighbor object: id=8 hostname=planet1.toronto.canet4.nodes.planet-lab.org ip=205.189.32.141 port=27000
+Connected successfully to (143.248.139.170,27000,1) on socket 12
+Sending payload  of size 0
+Connected successfully to (205.189.32.129,27000,4) on socket 13
+Sending payload  of size 0
+Connected successfully to (205.189.32.147,27000,5) on socket 14
+Sending payload  of size 0
+Connected successfully to (12.108.127.136,27000,7) on socket 15
+Sending payload  of size 0
+Connected successfully to (205.189.32.141,27000,8) on socket 16
+Sending payload  of size 0
+Dispatching event of type:1
+Message payload=16	 hopcount=3
+Authenticated neighbor (205.189.32.129,4) on socket 11
+Message payload=40	 hopcount=5
+Authenticated neighbor (143.248.139.170,1) on socket 17
+Message payload=40	 hopcount=4
+Authenticated neighbor (205.189.32.147,5) on socket 18
+Message payload=0	 hopcount=1
+Authenticated neighbor (12.108.127.136,7) on socket 19
+Got unseen and reliable DNS message ``Hello 2 from DNS server 6.''.
+Dispatching event of type:4
+Dispatching event of type:7
+Got unseen and reliable DNS message ``Hello 1 from DNS server 1.''.
+Got seen/unreliable DNS message ``Hello 1 from DNS server 1.''.
+Got unseen and reliable DNS message ``Hello 1 from DNS server 4.''.
+Got seen/unreliable DNS message ``Hello 1 from DNS server 4.''.
+Message payload=24	 hopcount=3
+Authenticated neighbor (205.189.32.141,8) on socket 20
+Got DNS message ``Hello 1 from DNS server 3.'' from unreliable node (3, 129.237.123.250).
+Got DNS message ``Hello 1 from DNS server 3.'' from unreliable node (3, 129.237.123.250).
+Got unseen and reliable DNS message ``Hello 3 from DNS server 6.''.
+Dispatching event of type:7
+Got unseen and reliable DNS message ``Hello 4 from DNS server 6.''.
+Dispatching event of type:7
+Got unseen and reliable DNS message ``Hello 1 from DNS server 9.''.
+Got seen/unreliable DNS message ``Hello 1 from DNS server 9.''.
+Got unseen and reliable DNS message ``Hello 1 from DNS server 5.''.
+Broadcasted fake message: ``Hello 1 from DNS server 0.''.
+Got unseen and reliable DNS message ``Hello 5 from DNS server 6.''.
+Dispatching event of type:7
+Got DNS message ``Hello 2 from DNS server 3.'' from unreliable node (3, 129.237.123.250).
+Got DNS message ``Hello 2 from DNS server 3.'' from unreliable node (3, 129.237.123.250).
+Got unseen and reliable DNS message ``Hello 2 from DNS server 1.''.
+Got unseen and reliable DNS message ``Hello 2 from DNS server 4.''.
+Got seen/unreliable DNS message ``Hello 2 from DNS server 1.''.
+Got seen/unreliable DNS message ``Hello 2 from DNS server 4.''.
+Dispatching event of type:7
+Got unseen and reliable DNS message ``Hello 6 from DNS server 6.''.
+Dispatching event of type:7
+Got unseen and reliable DNS message ``Hello 7 from DNS server 6.''.
+Dispatching event of type:7
+Got DNS message ``Hello 3 from DNS server 3.'' from unreliable node (3, 129.237.123.250).
+Got unseen and reliable DNS message ``Hello 3 from DNS server 7.''.
+Got DNS message ``Hello 3 from DNS server 3.'' from unreliable node (3, 129.237.123.250).
+Got unseen and reliable DNS message ``Hello 8 from DNS server 6.''.
+Broadcasted fake message: ``Hello 2 from DNS server 0.''.
+Got unseen and reliable DNS message ``Hello 2 from DNS server 0.''.
+Got unseen and reliable DNS message ``Hello 3 from DNS server 1.''.
+Got seen/unreliable DNS message ``Hello 3 from DNS server 1.''.
+Got unseen and reliable DNS message ``Hello 3 from DNS server 4.''.
+Got seen/unreliable DNS message ``Hello 3 from DNS server 4.''.
+Got PV message with 0 size.
+Path:[(4)-(1)-(5)-(0)-]
+Dispatching event of type:7
+Got PV message with 0 size.
+Path:[(6)-(8)-(9)-(4)-(0)-]
+Got PV message with 0 size.
+Path:[(6)-(8)-(9)-(4)-(1)-(0)-]
+Got PV message with 0 size.
+Path:[(3)-(9)-(4)-(1)-(6)-(5)-(0)-]
+Got PV message with 0 size.
+Path:[(6)-(8)-(9)-(3)-(4)-(0)-]
+Got PV message with 0 size.
+Path:[(4)-(9)-(5)-(1)-(0)-]
+Got PV message with 0 size.
+Path:[(4)-(9)-(5)-(0)-]
+Got unseen and reliable DNS message ``Hello 2 from DNS server 9.''.
+Got PV message with 0 size.
+Path:[(4)-(9)-(5)-(6)-(1)-(0)-]
+Got unseen and reliable DNS message ``Hello 2 from DNS server 5.''.
+Got seen/unreliable DNS message ``Hello 3 from DNS server 4.''.
+Got PV message with 0 size.
+Path:[(6)-(8)-(9)-(3)-(4)-(1)-(0)-]
+Got unseen and reliable DNS message ``Hello 1 from DNS server 6.''.
+Dispatching event of type:7
+************************************************************
+* LIBLOG caught SIGSEGV:                                   *
+*                                                          *
+* PID: 13085    CR2: 0x088eb004   EIP: 0x0809bc77          *
+************************************************************
+fatal [13085]: sig_segv_handler
+Backtrace:
+0: [0x0044bf55] ../libs/liblog.so.0(fatal+0x42) [0x44bf55]
+1: [0x003acd8a] ../libs/liblog.so.0 [0x3acd8a]
+2: [0x00e1d440] [0xe1d440]
+3: [0x0809d24c] ./tk [0x809d24c]
+4: [0x08092f8b] ./tk [0x8092f8b]
+5: [0x0808311e] ./tk [0x808311e]
+6: [0x0804db06] ./tk [0x804db06]
+7: [0x0804dd63] ./tk [0x804dd63]
+8: [0x080527dc] ./tk [0x80527dc]
+9: [0x00b74ad4] /lib/tls/libc.so.6(__libc_start_main+0xe4) [0xb74ad4]
+Attach using GDB or hit Ctrl+C to exit.Broadcasted fake message: ``Hello 3 from DNS server 0.''.

@@ -1,0 +1,4 @@
+2_grouse.hpl.hp.com_27000
+4_planet1.calgary.canet4.nodes.planet-lab.org_27000
+7_planet1.pittsburgh.intel-research.net_27000
+9_planet1.winnipeg.canet4.nodes.planet-lab.org_27000

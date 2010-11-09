@@ -1,0 +1,122 @@
+#!/usr/bin/env python2.6
+
+import os
+import re
+import sys
+import glob
+from progressbar import *
+from subprocess import *
+from select import *
+from collections import deque
+from multiprocessing import Pool, Process, Manager, Queue
+
+nodeList = [ 
+      ("r31.millennium.berkeley.edu", 4),
+      ("r32.millennium.berkeley.edu", 4) ]
+pattern = re.compile("Invalid.")
+
+def WorkerDoSolve(cpuTuple, workQ, resQ):
+   #print cpuTuple
+   cmdStr = "ssh %s /work/galtekar/bin/bin/stp -p"%(cpuTuple[0])
+   #print cmdStr
+
+   while 1:
+      job = workQ.get()
+      id, cnstrList = job
+      p = Popen(cmdStr, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True)
+      try:
+         p.stdin.writelines(cnstrList)
+         p.stdin.close()
+         outData = p.stdout.read()
+         p.wait()
+         resQ.put((id, outData))
+      except KeyboardInterrupt:
+         p.kill()
+         p.wait()
+         return
+
+   #print outData
+
+def ClusterDoSolve(workList, cpuList):
+   #man = Manager()
+   #shCpuList = man.list(cpuList)
+   workQ = Queue()
+   resQ = Queue()
+   procList = []
+   for i in range(len(cpuList)):
+      p = Process(target=WorkerDoSolve, args=(cpuList[i], workQ, resQ) )
+      p.start()
+      procList.append(p)
+
+   i = 0
+   for w in workList:
+      workQ.put((i, w))
+      i = i + 1
+
+   widgets = ['Solve: ', Percentage(), ' ', Bar(marker=RotatingMarker()), ' ']
+   pbar = ProgressBar(widgets=widgets, maxval=len(workList)).start()
+   i = 0
+   while i < len(workList):
+      res = resQ.get()
+      id, outData = res
+      match = pattern.search(outData)
+      #print match
+      if not match:
+         print "Sub-formula", id, "failed."
+         print outData
+      #print "Result:", res
+      #print i
+      i = i + 1
+      pbar.update(i)
+   pbar.finish()
+
+   for p in procList:
+      p.terminate()
+      p.join()
+
+
+def CalcCPUList():
+   cpuList = []
+
+   for l in nodeList:
+      name, numCPUs = l
+      for i in range(numCPUs):
+         cpuList.append((name, i))
+
+   return cpuList
+
+def ReadFormulas(fileNameList):
+   formList = []
+
+   #print fileNameList
+   for name in fileNameList:
+      form = []
+      f = open(name, 'r')
+      for line in f:
+         form.append(line);
+      f.close()
+      formList.append(form)
+
+   return formList
+
+
+def main():
+   if len(sys.argv) < 2:
+      print("usage: bdr-psolve <formula file> ... ")
+      sys.exit(-1)
+
+   formGlobList = sys.argv[1:]
+
+   fileNameList = []
+   for g in formGlobList:
+      fileNameList.extend(glob.glob(g))
+   formList = ReadFormulas(fileNameList)
+   print "Read", len(formList), "formulas."
+
+   formList.sort(lambda x, y: len(y)-len(x))
+
+   cpuList = CalcCPUList()
+   print "Solving in parallel on", len(cpuList), "CPU(s)."
+   ClusterDoSolve(formList, cpuList)
+
+main()

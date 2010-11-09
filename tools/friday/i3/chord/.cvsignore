@@ -1,0 +1,7 @@
+.deps
+Makefile.in
+Makefile
+.libs
+gen_conf
+gen_conf_same
+test

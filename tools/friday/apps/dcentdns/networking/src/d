@@ -1,0 +1,4 @@
+#!/bin/tcsh
+make
+#./scripts/distribute_code.pl -l ucb_i3 ./tests/topology.2.txt ./tests/map.2.txt
+./scripts/distribute_code.pl -l ucb_i3 ./tests/topology.10.txt ./tests/pmap.10.2.txt

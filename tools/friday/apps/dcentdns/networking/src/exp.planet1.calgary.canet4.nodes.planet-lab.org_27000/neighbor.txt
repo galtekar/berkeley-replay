@@ -1,0 +1,4 @@
+0_csplanetlab2.kaist.ac.kr_27000
+1_csplanetlab3.kaist.ac.kr_27000
+3_kupl1.ittc.ku.edu_27000
+9_planet1.winnipeg.canet4.nodes.planet-lab.org_27000

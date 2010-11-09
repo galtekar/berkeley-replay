@@ -1,0 +1,58 @@
+<?xml version="1.0"?> 
+
+<parameters> 
+
+<version> 0.1 </version>
+
+<i3_server> 
+  <addr> 169.229.50.83 5612 78aa4acffa34651db05c3c2f70c90da830b0231b </addr> 
+  <closest_server> 1 </closest_server>
+  <status_url> rose.cs.berkeley.edu:8000/i3_status.txt  </status_url>
+  <use_tcp> 0 </use_tcp>
+</i3_server> 
+
+<proxy> 
+
+  <anycast_trigger> ca78883de1913fcdb2820b629e85a4ee4859b7dcd391f208 db28b03d39ef8aa45c76e148798a1762  </anycast_trigger>
+  <unicast_trigger>  96413670d5cd1a8fae8e0240d2f0b84ee98474583d53969b7f2abaf342aca7d8  ed5dc9432be3d3005dfc4bd096704ab7   </unicast_trigger>
+
+  <port> 20000 </port> 
+
+  <tun> 
+    <addr> 10.0.0.1 </addr> 
+    <mtu> 1200 </mtu> 
+    <path> /dev/net/tun </path> 
+    <name> tun0 </name> 
+    <rt_table_name> tuntab </rt_table_name> 
+   </tun> 
+
+  <fake_addr_range> 
+    <start> 10.0.0.2 </start> 
+    <mask> 255.0.0.0 </mask> 
+   </fake_addr_range>   
+
+  <authentication> 
+    <public_key_file> public.key </public_key_file> 
+    <private_key_file> private.key </private_key_file> 
+  </authentication> 
+
+  <status_files> 
+	  <pub_dns> /tmp/pub_dns </pub_dns> 
+	  <fake_dns> /tmp/fake_dns </fake_dns> 
+	  <id_list> /tmp/id_list </id_list> 
+  </status_files> 
+
+  <fake_log> /tmp/fake.log </fake_log> 
+  <iptables_cmd> /sbin/iptables </iptables_cmd> 
+  <ip_cmd> /sbin/ip </ip_cmd> 
+  
+</proxy> 
+
+</parameters> 
+
+
+ 
+
+
+
+
