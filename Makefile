@@ -73,5 +73,5 @@ cscope_clean:
 	rm -f cscope.files cscope.in.out cscope.out cscope.po.out
 
 cscope:
-	find `pwd`/vkernel `pwd`/libs -regex ".*/*\.\(cpp\|cc\|c\|h\|hpp\|S\)?" -type f > cscope.files
+	find `pwd`/vkernel `pwd`/include `pwd`/libs -regex ".*/*\.\(cpp\|cc\|c\|h\|hpp\|S\)?" -type f > cscope.files
 	cscope -qbk
